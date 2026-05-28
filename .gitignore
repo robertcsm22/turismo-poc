@@ -1,0 +1,23 @@
+# Backend
+backend/target/
+backend/.mvn/
+backend/*.class
+
+# Frontend
+frontend/node_modules/
+frontend/dist/
+frontend/.env.local
+frontend/.env.*.local
+
+# IDE
+.idea/
+*.iml
+.vscode/
+.DS_Store
+
+# Secrets — NUNCA subir
+*.env
+.env
+application-prod.yml
+service-account*.json
+gcp-key*.json

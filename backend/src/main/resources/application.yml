@@ -1,0 +1,36 @@
+server:
+  port: 8080
+
+spring:
+  datasource:
+    url: ${DATABASE_URL:jdbc:postgresql://localhost:5432/turismo_db}
+    username: ${DATABASE_USER:postgres}
+    password: ${DATABASE_PASSWORD:postgres}
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: false
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: true
+
+# Google OAuth2 Config
+google:
+  client-id: ${GOOGLE_CLIENT_ID}   # Se configura en GitHub Secrets / .env local
+
+# JWT Config
+jwt:
+  secret: ${JWT_SECRET:mi-secreto-super-seguro-para-desarrollo-local-123456789}
+  expiration-ms: 86400000  # 24 horas
+
+# CORS — ajustar al dominio del frontend en producción
+cors:
+  allowed-origins: ${CORS_ORIGINS:http://localhost:5173,http://localhost:3000}
+
+# Logs
+logging:
+  level:
+    com.turismo: DEBUG
+    org.springframework.security: INFO
