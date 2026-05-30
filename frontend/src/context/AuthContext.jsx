@@ -8,7 +8,6 @@ export function AuthProvider({ children }) {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    // Si hay token guardado, restaurar sesión
     const savedUser = localStorage.getItem('user_data')
     if (token && savedUser) {
       setUser(JSON.parse(savedUser))
@@ -28,9 +27,9 @@ export function AuthProvider({ children }) {
     setUser(null)
     localStorage.removeItem('jwt_token')
     localStorage.removeItem('user_data')
-    // Revocar sesión de Google
     if (window.google) {
       window.google.accounts.id.disableAutoSelect()
+      window.google.accounts.id.revoke(localStorage.getItem('user_email') || '', () => {})
     }
   }
 

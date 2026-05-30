@@ -13,6 +13,7 @@ export default function LoginPage() {
   const [town, setTown] = useState(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
+  const [googleReady, setGoogleReady] = useState(false)
 
   // Si ya está autenticado, redirigir directo a lugares
   useEffect(() => {
@@ -29,63 +30,76 @@ export default function LoginPage() {
       .catch(() => navigate('/error'))
   }, [townSlug, navigate])
 
-  // Inicializar Google Sign-In cuando el SDK cargue
-  useEffect(() => {
-    if (!GOOGLE_CLIENT_ID) {
-      console.error('VITE_GOOGLE_CLIENT_ID no está definido en .env')
-      return
-    }
-
-    const initGoogle = () => {
-      window.google.accounts.id.initialize({
-        client_id: GOOGLE_CLIENT_ID,
-        callback: handleGoogleResponse,
-        auto_select: false,
-      })
-
-      window.google.accounts.id.renderButton(
-        document.getElementById('google-btn'),
-        {
-          theme: 'outline',
-          size: 'large',
-          text: 'continue_with',
-          locale: 'es',
-          width: 280,
-        }
-      )
-    }
-
-    // El SDK puede ya estar cargado o aún cargando
-    if (window.google) {
-      initGoogle()
-    } else {
-      window.addEventListener('load', initGoogle)
-    }
-
-    return () => window.removeEventListener('load', initGoogle)
-  }, [])
-
   // Callback que recibe el credential de Google
   const handleGoogleResponse = async (response) => {
     setLoading(true)
     setError(null)
     try {
-      // Enviar el ID Token al backend para verificación
       const authResponse = await authService.loginWithGoogle(response.credential)
       login(authResponse)
       navigate(townSlug ? `/lugares/${townSlug}` : '/')
     } catch (err) {
       setError(err.response?.data?.message || 'Error al iniciar sesión. Intenta de nuevo.')
-    } finally {
       setLoading(false)
+      // Re-renderizar el botón si hay error
+      setGoogleReady(false)
+      setTimeout(() => setGoogleReady(true), 100)
     }
   }
+
+  // Cargar y renderizar el botón de Google
+  useEffect(() => {
+    if (!GOOGLE_CLIENT_ID) {
+      console.error('VITE_GOOGLE_CLIENT_ID no está definido en .env')
+      return
+    }
+    if (loading) return
+
+    const renderGoogleButton = () => {
+      if (!window.google) return
+      
+      try {
+        window.google.accounts.id.cancel()
+      } catch(e) {}
+
+      window.google.accounts.id.initialize({
+        client_id: GOOGLE_CLIENT_ID,
+        callback: handleGoogleResponse,
+        auto_select: false,
+        cancel_on_tap_outside: false,
+      })
+
+      const btnEl = document.getElementById('google-btn')
+      if (btnEl) {
+        btnEl.innerHTML = ''
+        window.google.accounts.id.renderButton(btnEl, {
+          theme: 'outline',
+          size: 'large',
+          text: 'continue_with',
+          locale: 'es',
+          width: 280,
+        })
+      }
+    }
+
+    if (window.google) {
+      renderGoogleButton()
+    } else {
+      // Esperar a que el SDK cargue
+      const interval = setInterval(() => {
+        if (window.google) {
+          clearInterval(interval)
+          renderGoogleButton()
+        }
+      }, 100)
+      return () => clearInterval(interval)
+    }
+  }, [loading, googleReady])
 
   return (
     <div className="min-vh-100 d-flex align-items-center justify-content-center"
          style={{ background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' }}>
       <div className="card shadow-lg p-4 p-md-5" style={{ maxWidth: 420, width: '100%', borderRadius: 16 }}>
-        {/* Logo o imagen del pueblo */}
         <div className="text-center mb-4">
           <span style={{ fontSize: 48 }}>🌴</span>
           <h1 className="h4 fw-bold mt-2 mb-0" style={{ color: '#2d3748' }}>
@@ -113,7 +127,6 @@ export default function LoginPage() {
           </div>
         ) : (
           <div className="d-flex justify-content-center">
-            {/* El SDK de Google renderiza el botón aquí */}
             <div id="google-btn"></div>
           </div>
         )}

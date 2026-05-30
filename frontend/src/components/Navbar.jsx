@@ -6,9 +6,9 @@ export default function Navbar({ town, user }) {
   const navigate = useNavigate()
 
   const handleLogout = () => {
-    logout()
-    navigate('/login')
-  }
+  logout()
+  navigate(town?.slug ? `/p/${town.slug}` : '/login')
+}
 
   return (
     <nav className="navbar navbar-expand-lg navbar-dark"
