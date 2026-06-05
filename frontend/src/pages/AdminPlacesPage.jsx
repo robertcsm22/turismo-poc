@@ -5,6 +5,8 @@ export default function AdminPlacesPage() {
 
   const [places, setPlaces] = useState([])
 
+  const [editingId, setEditingId] = useState(null)
+
   const [formData, setFormData] = useState({
     name: '',
     description: '',
@@ -33,38 +35,54 @@ export default function AdminPlacesPage() {
   }
 
   const handleSubmit = async (e) => {
-    e.preventDefault()
+  e.preventDefault()
 
-    try {
+  try {
 
-      const townId = 1
+    const townId = 1
 
-      const result = await placeService.createPlace(
+    let result
+
+    if (editingId) {
+
+      result = await placeService.updatePlace(
+        editingId,
+        formData
+      )
+
+      alert('Lugar actualizado correctamente')
+
+    } else {
+
+      result = await placeService.createPlace(
         townId,
         formData
       )
 
-      console.log('Lugar creado:', result)
-
       alert('Lugar guardado correctamente')
-
-      setFormData({
-        name: '',
-        description: '',
-        category: 'PARQUE',
-        address: '',
-        imageUrl: ''
-      })
-
-      loadPlaces()
-
-    } catch (error) {
-
-      console.error(error)
-
-      alert('Error al guardar el lugar')
     }
+
+    console.log(result)
+
+    setEditingId(null)
+
+    setFormData({
+      name: '',
+      description: '',
+      category: 'PARQUE',
+      address: '',
+      imageUrl: ''
+    })
+
+    loadPlaces()
+
+  } catch (error) {
+
+    console.error(error)
+
+    alert('Error al guardar el lugar')
   }
+}
     
     const handleDelete = async (id) => {
 
@@ -88,6 +106,18 @@ export default function AdminPlacesPage() {
 
     alert('Error al eliminar lugar')
   }
+}
+   const handleEdit = (place) => {
+
+     setEditingId(place.id)
+
+     setFormData({
+     name: place.name || '',
+     description: place.description || '',
+     category: place.category || 'PARQUE',
+     address: place.address || '',
+     imageUrl: place.imageUrl || ''
+  })
 }
 
   return (
@@ -185,8 +215,11 @@ export default function AdminPlacesPage() {
               </span>
 
               <div>
-                <button className="btn btn-warning btn-sm me-2">
-                  Editar
+                <button
+                  className="btn btn-warning btn-sm me-2"
+                  onClick={() => handleEdit(place)}
+                   >
+                 Editar
                 </button>
 
                 <button

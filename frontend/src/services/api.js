@@ -48,8 +48,10 @@ export const placeService = {
   createPlace: (townId, placeData) =>
     api.post(`/places/town/${townId}`, placeData).then((r) => r.data),
 
+  updatePlace: (id, placeData) =>
+    api.put(`/places/${id}`, placeData).then((r) => r.data),
+
   deletePlace: (id) =>
     api.delete(`/places/${id}`),
 }
-
 export default api
