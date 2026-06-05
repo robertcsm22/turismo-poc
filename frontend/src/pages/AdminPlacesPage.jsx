@@ -1,243 +1,456 @@
 import { useState, useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
+import { useAuth } from '../context/AuthContext'
 import { placeService, townService } from '../services/api'
+import Navbar from '../components/Navbar'
+
+const CATEGORIES = {
+  PARQUE:      { label: 'Parque',       icon: '🌿', bg: '#16a34a', light: '#dcfce7' },
+  PLAYA:       { label: 'Playa',        icon: '🏖️', bg: '#0284c7', light: '#e0f2fe' },
+  HOTEL:       { label: 'Hotel',        icon: '🏨', bg: '#d97706', light: '#fef3c7' },
+  MIRADOR:     { label: 'Mirador',      icon: '🏔️', bg: '#7c3aed', light: '#ede9fe' },
+  RESTAURANTE: { label: 'Restaurante',  icon: '🍽️', bg: '#dc2626', light: '#fee2e2' },
+  MUSEO:       { label: 'Museo',        icon: '🏛️', bg: '#4f46e5', light: '#e0e7ff' },
+  CULTURAL:    { label: 'Cultural',     icon: '🎭', bg: '#db2777', light: '#fce7f3' },
+  GASTRONOMIA: { label: 'Gastronomía',  icon: '🍜', bg: '#ea580c', light: '#ffedd5' },
+  OTRO:        { label: 'Otro',         icon: '📍', bg: '#64748b', light: '#f1f5f9' },
+}
+
+const EMPTY_FORM = { name: '', description: '', category: 'PARQUE', address: '', imageUrl: '' }
+
+function Toast({ toast }) {
+  if (!toast) return null
+  const isSuccess = toast.type === 'success'
+  return (
+    <div style={{
+      position: 'fixed', top: 24, right: 24, zIndex: 9999,
+      background: isSuccess ? '#16a34a' : '#dc2626',
+      color: 'white', padding: '14px 20px', borderRadius: 12,
+      boxShadow: '0 8px 32px rgba(0,0,0,0.25)',
+      display: 'flex', alignItems: 'center', gap: 10,
+      fontSize: 15, fontWeight: 500,
+      animation: 'slideIn 0.3s ease',
+      maxWidth: 340,
+    }}>
+      <span style={{ fontSize: 18 }}>{isSuccess ? '✅' : '❌'}</span>
+      {toast.message}
+    </div>
+  )
+}
+
+function CategoryBadge({ category }) {
+  const cfg = CATEGORIES[category] || CATEGORIES.OTRO
+  return (
+    <span style={{
+      display: 'inline-flex', alignItems: 'center', gap: 5,
+      background: cfg.light, color: cfg.bg,
+      padding: '3px 10px', borderRadius: 20,
+      fontSize: 12, fontWeight: 600,
+      border: `1px solid ${cfg.bg}33`,
+    }}>
+      {cfg.icon} {cfg.label}
+    </span>
+  )
+}
 
 export default function AdminPlacesPage() {
+  const navigate = useNavigate()
+  const { user } = useAuth()
 
+  const [town, setTown] = useState(null)
   const [places, setPlaces] = useState([])
-
   const [editingId, setEditingId] = useState(null)
+  const [formData, setFormData] = useState(EMPTY_FORM)
+  const [toast, setToast] = useState(null)
+  const [deletingId, setDeletingId] = useState(null)
 
-  const [formData, setFormData] = useState({
-    name: '',
-    description: '',
-    category: 'PARQUE',
-    address: '',
-    imageUrl: ''
-  })
+  const showToast = (message, type = 'success') => {
+    setToast({ message, type })
+    setTimeout(() => setToast(null), 3500)
+  }
 
   useEffect(() => {
+    townService.getTown('santa-teresa').then(setTown).catch(console.error)
     loadPlaces()
   }, [])
 
   const loadPlaces = () => {
-    townService.getPlaces('santa-teresa')
-      .then((data) => {
-        setPlaces(data)
-      })
-      .catch(console.error)
+    townService.getPlaces('santa-teresa').then(setPlaces).catch(console.error)
   }
 
-  const handleChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value
-    })
-  }
+  const handleChange = (e) => setFormData({ ...formData, [e.target.name]: e.target.value })
 
   const handleSubmit = async (e) => {
-  e.preventDefault()
-
-  try {
-
-    const townId = 1
-
-    let result
-
-    if (editingId) {
-
-      result = await placeService.updatePlace(
-        editingId,
-        formData
-      )
-
-      alert('Lugar actualizado correctamente')
-
-    } else {
-
-      result = await placeService.createPlace(
-        townId,
-        formData
-      )
-
-      alert('Lugar guardado correctamente')
+    e.preventDefault()
+    try {
+      if (editingId) {
+        await placeService.updatePlace(editingId, formData)
+        showToast('Lugar actualizado correctamente')
+      } else {
+        await placeService.createPlace(1, formData)
+        showToast('Lugar creado correctamente')
+      }
+      setEditingId(null)
+      setFormData(EMPTY_FORM)
+      loadPlaces()
+    } catch {
+      showToast('Error al guardar el lugar', 'error')
     }
+  }
 
-    console.log(result)
+  const handleDelete = async (id) => {
+    setDeletingId(id)
+    try {
+      await placeService.deletePlace(id)
+      showToast('Lugar eliminado')
+      loadPlaces()
+    } catch {
+      showToast('Error al eliminar el lugar', 'error')
+    } finally {
+      setDeletingId(null)
+    }
+  }
 
-    setEditingId(null)
-
+  const handleEdit = (place) => {
+    setEditingId(place.id)
     setFormData({
-      name: '',
-      description: '',
-      category: 'PARQUE',
-      address: '',
-      imageUrl: ''
+      name: place.name || '',
+      description: place.description || '',
+      category: place.category || 'PARQUE',
+      address: place.address || '',
+      imageUrl: place.imageUrl || '',
     })
-
-    loadPlaces()
-
-  } catch (error) {
-
-    console.error(error)
-
-    alert('Error al guardar el lugar')
+    window.scrollTo({ top: 0, behavior: 'smooth' })
   }
-}
-    
-    const handleDelete = async (id) => {
 
-  const confirmar = window.confirm(
-    '¿Deseas eliminar este lugar?'
-  )
-
-  if (!confirmar) return
-
-  try {
-
-    await placeService.deletePlace(id)
-
-    alert('Lugar eliminado correctamente')
-
-    loadPlaces()
-
-  } catch (error) {
-
-    console.error(error)
-
-    alert('Error al eliminar lugar')
+  const handleCancel = () => {
+    setEditingId(null)
+    setFormData(EMPTY_FORM)
   }
-}
-   const handleEdit = (place) => {
 
-     setEditingId(place.id)
+  const inputStyle = {
+    width: '100%', padding: '10px 14px', borderRadius: 10,
+    border: '1.5px solid #d1d5db', fontSize: 14, outline: 'none',
+    background: 'white', transition: 'border-color 0.2s',
+    fontFamily: 'inherit',
+  }
 
-     setFormData({
-     name: place.name || '',
-     description: place.description || '',
-     category: place.category || 'PARQUE',
-     address: place.address || '',
-     imageUrl: place.imageUrl || ''
-  })
-}
+  const labelStyle = {
+    display: 'block', fontSize: 13, fontWeight: 600,
+    color: '#374151', marginBottom: 6,
+  }
 
   return (
-    <div className="container py-4">
+    <>
+      <style>{`
+        @keyframes slideIn { from { opacity:0; transform: translateX(40px) } to { opacity:1; transform: translateX(0) } }
+        .admin-input:focus { border-color: #20606e !important; box-shadow: 0 0 0 3px #20606e22; }
+        .place-admin-card { transition: transform 0.2s, box-shadow 0.2s; }
+        .place-admin-card:hover { transform: translateY(-4px); box-shadow: 0 12px 32px rgba(0,0,0,0.15) !important; }
+        .btn-edit:hover { background: #d97706 !important; }
+        .btn-delete:hover { background: #b91c1c !important; }
+        .btn-back:hover { background: #1a4d56 !important; transform: translateX(-3px); }
+        .btn-submit:hover { background: #1a4d56 !important; }
+      `}</style>
 
-      <h2 className="mb-4">
-        ⚙️ Administración de Lugares
-      </h2>
+      <Toast toast={toast} />
+      <Navbar town={town} user={user} />
 
-      <form onSubmit={handleSubmit} className="card p-4 shadow-sm">
-
-        <div className="mb-3">
-          <label className="form-label">Nombre</label>
-          <input
-            type="text"
-            className="form-control"
-            name="name"
-            value={formData.name}
-            onChange={handleChange}
-          />
-        </div>
-
-        <div className="mb-3">
-          <label className="form-label">Descripción</label>
-          <textarea
-            className="form-control"
-            name="description"
-            value={formData.description}
-            onChange={handleChange}
-          />
-        </div>
-
-        <div className="mb-3">
-          <label className="form-label">Categoría</label>
-          <select
-            className="form-select"
-            name="category"
-            value={formData.category}
-            onChange={handleChange}
-          >
-            <option value="PARQUE">Parque</option>
-            <option value="PLAYA">Playa</option>
-            <option value="HOTEL">Hotel</option>
-            <option value="MIRADOR">Mirador</option>
-            <option value="RESTAURANTE">Restaurante</option>
-            <option value="MUSEO">Museo</option>
-            <option value="CULTURAL">Cultural</option>
-            <option value="GASTRONOMIA">Gastronomía</option>
-            <option value="OTRO">Otro</option>
-          </select>
-        </div>
-
-        <div className="mb-3">
-          <label className="form-label">Dirección</label>
-          <input
-            type="text"
-            className="form-control"
-            name="address"
-            value={formData.address}
-            onChange={handleChange}
-          />
-        </div>
-
-        <div className="mb-3">
-          <label className="form-label">URL Imagen</label>
-          <input
-            type="text"
-            className="form-control"
-            name="imageUrl"
-            value={formData.imageUrl}
-            onChange={handleChange}
-          />
-        </div>
-
-        <button className="btn btn-primary">
-          Guardar Lugar
-        </button>
-
-      </form>
-
-      <div className="mt-4">
-
-        <h3>📍 Lugares registrados</h3>
-
-        <ul className="list-group">
-
-          {places.map((place) => (
-
-            <li
-              key={place.id}
-              className="list-group-item d-flex justify-content-between align-items-center"
+      {/* Page Header */}
+      <div style={{
+        background: 'linear-gradient(135deg, #123C3A 0%, #20606e 60%, #2F7C91 100%)',
+        padding: '36px 0 32px', color: 'white',
+      }}>
+        <div className="container">
+          <div style={{ display: 'flex', alignItems: 'center', gap: 16, flexWrap: 'wrap' }}>
+            <button
+              className="btn-back"
+              onClick={() => navigate(-1)}
+              style={{
+                background: 'rgba(255,255,255,0.15)', color: 'white',
+                border: '1.5px solid rgba(255,255,255,0.3)',
+                padding: '8px 18px', borderRadius: 10, fontSize: 14,
+                fontWeight: 500, cursor: 'pointer', transition: 'all 0.2s',
+                backdropFilter: 'blur(4px)',
+              }}
             >
-              <span>
-                {place.name}
+              ← Volver
+            </button>
+            <div>
+              <h1 style={{ margin: 0, fontSize: 28, fontWeight: 700, letterSpacing: -0.5 }}>
+                Panel de Administración
+              </h1>
+              <p style={{ margin: '4px 0 0', opacity: 0.75, fontSize: 14 }}>
+                Gestiona los lugares turísticos de {town?.name || 'Santa Teresa'}
+              </p>
+            </div>
+            <div style={{ marginLeft: 'auto' }}>
+              <span style={{
+                background: 'rgba(255,255,255,0.2)', padding: '6px 16px',
+                borderRadius: 20, fontSize: 14, fontWeight: 600,
+                border: '1px solid rgba(255,255,255,0.3)',
+              }}>
+                {places.length} lugar{places.length !== 1 ? 'es' : ''}
               </span>
-
-              <div>
-                <button
-                  className="btn btn-warning btn-sm me-2"
-                  onClick={() => handleEdit(place)}
-                   >
-                 Editar
-                </button>
-
-                <button
-                  className="btn btn-danger btn-sm"
-                   onClick={() => handleDelete(place.id)}
-                >
-                   Eliminar
-                </button>
-              </div>
-
-            </li>
-
-          ))}
-
-        </ul>
-
+            </div>
+          </div>
+        </div>
       </div>
 
-    </div>
+      <div className="container" style={{ padding: '32px 16px 60px' }}>
+        <div className="row g-4">
+
+          {/* Form Column */}
+          <div className="col-lg-4">
+            <div style={{
+              background: 'white', borderRadius: 18, overflow: 'hidden',
+              boxShadow: '0 4px 24px rgba(0,0,0,0.10)', position: 'sticky', top: 80,
+            }}>
+              <div style={{
+                background: editingId
+                  ? 'linear-gradient(135deg, #d97706, #b45309)'
+                  : 'linear-gradient(135deg, #20606e, #123C3A)',
+                padding: '20px 24px', color: 'white',
+              }}>
+                <h5 style={{ margin: 0, fontSize: 17, fontWeight: 700 }}>
+                  {editingId ? '✏️  Editar Lugar' : '➕  Nuevo Lugar'}
+                </h5>
+                {editingId && (
+                  <p style={{ margin: '4px 0 0', opacity: 0.8, fontSize: 13 }}>
+                    Modificando ID #{editingId}
+                  </p>
+                )}
+              </div>
+
+              <form onSubmit={handleSubmit} style={{ padding: 24, display: 'flex', flexDirection: 'column', gap: 16 }}>
+                <div>
+                  <label style={labelStyle}>Nombre del lugar</label>
+                  <input
+                    className="admin-input"
+                    style={inputStyle}
+                    type="text"
+                    name="name"
+                    placeholder="Ej. Playa Bonita"
+                    value={formData.name}
+                    onChange={handleChange}
+                    required
+                  />
+                </div>
+
+                <div>
+                  <label style={labelStyle}>Descripción</label>
+                  <textarea
+                    className="admin-input"
+                    style={{ ...inputStyle, minHeight: 90, resize: 'vertical' }}
+                    name="description"
+                    placeholder="Breve descripción del lugar..."
+                    value={formData.description}
+                    onChange={handleChange}
+                  />
+                </div>
+
+                <div>
+                  <label style={labelStyle}>Categoría</label>
+                  <select
+                    className="admin-input"
+                    style={{ ...inputStyle, cursor: 'pointer' }}
+                    name="category"
+                    value={formData.category}
+                    onChange={handleChange}
+                  >
+                    {Object.entries(CATEGORIES).map(([val, cfg]) => (
+                      <option key={val} value={val}>{cfg.icon} {cfg.label}</option>
+                    ))}
+                  </select>
+                </div>
+
+                <div>
+                  <label style={labelStyle}>Dirección</label>
+                  <input
+                    className="admin-input"
+                    style={inputStyle}
+                    type="text"
+                    name="address"
+                    placeholder="Ej. Calle Principal, #10"
+                    value={formData.address}
+                    onChange={handleChange}
+                  />
+                </div>
+
+                <div>
+                  <label style={labelStyle}>URL de imagen</label>
+                  <input
+                    className="admin-input"
+                    style={inputStyle}
+                    type="text"
+                    name="imageUrl"
+                    placeholder="https://..."
+                    value={formData.imageUrl}
+                    onChange={handleChange}
+                  />
+                  {formData.imageUrl && (
+                    <div style={{ marginTop: 10, borderRadius: 10, overflow: 'hidden', height: 120 }}>
+                      <img
+                        src={formData.imageUrl}
+                        alt="preview"
+                        style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                        onError={(e) => { e.target.style.display = 'none' }}
+                      />
+                    </div>
+                  )}
+                </div>
+
+                <div style={{ display: 'flex', gap: 10, marginTop: 4 }}>
+                  <button
+                    className="btn-submit"
+                    type="submit"
+                    style={{
+                      flex: 1, padding: '11px 0',
+                      background: editingId ? '#d97706' : '#20606e',
+                      color: 'white', border: 'none', borderRadius: 10,
+                      fontWeight: 700, fontSize: 15, cursor: 'pointer',
+                      transition: 'background 0.2s',
+                    }}
+                  >
+                    {editingId ? 'Guardar cambios' : 'Crear lugar'}
+                  </button>
+                  {editingId && (
+                    <button
+                      type="button"
+                      onClick={handleCancel}
+                      style={{
+                        padding: '11px 16px', background: '#f1f5f9',
+                        color: '#64748b', border: 'none', borderRadius: 10,
+                        fontWeight: 600, fontSize: 14, cursor: 'pointer',
+                      }}
+                    >
+                      Cancelar
+                    </button>
+                  )}
+                </div>
+              </form>
+            </div>
+          </div>
+
+          {/* Places List Column */}
+          <div className="col-lg-8">
+            {places.length === 0 ? (
+              <div style={{
+                background: 'white', borderRadius: 18, padding: '60px 24px',
+                textAlign: 'center', boxShadow: '0 4px 24px rgba(0,0,0,0.08)',
+              }}>
+                <div style={{ fontSize: 56, marginBottom: 16 }}>📍</div>
+                <h4 style={{ color: '#374151', fontWeight: 700 }}>Sin lugares aún</h4>
+                <p style={{ color: '#9ca3af', fontSize: 15 }}>
+                  Agrega el primer lugar turístico usando el formulario.
+                </p>
+              </div>
+            ) : (
+              <div className="row g-3">
+                {places.map((place) => {
+                  const cfg = CATEGORIES[place.category] || CATEGORIES.OTRO
+                  return (
+                    <div key={place.id} className="col-md-6">
+                      <div
+                        className="place-admin-card"
+                        style={{
+                          background: 'white', borderRadius: 16,
+                          overflow: 'hidden', boxShadow: '0 2px 12px rgba(0,0,0,0.08)',
+                          display: 'flex', flexDirection: 'column', height: '100%',
+                        }}
+                      >
+                        {/* Image */}
+                        <div style={{ position: 'relative', height: 140, overflow: 'hidden', background: '#f3f4f6' }}>
+                          {place.imageUrl ? (
+                            <img
+                              src={place.imageUrl}
+                              alt={place.name}
+                              style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                              onError={(e) => { e.target.style.display = 'none' }}
+                            />
+                          ) : (
+                            <div style={{
+                              width: '100%', height: '100%',
+                              display: 'flex', alignItems: 'center', justifyContent: 'center',
+                              background: `linear-gradient(135deg, ${cfg.light}, white)`,
+                              fontSize: 40,
+                            }}>
+                              {cfg.icon}
+                            </div>
+                          )}
+                          <div style={{
+                            position: 'absolute', top: 10, right: 10,
+                          }}>
+                            <CategoryBadge category={place.category} />
+                          </div>
+                        </div>
+
+                        {/* Content */}
+                        <div style={{ padding: '14px 16px', flex: 1 }}>
+                          <h6 style={{ margin: '0 0 6px', fontWeight: 700, fontSize: 16, color: '#111827' }}>
+                            {place.name}
+                          </h6>
+                          {place.address && (
+                            <p style={{ margin: '0 0 6px', fontSize: 12, color: '#6b7280' }}>
+                              📍 {place.address}
+                            </p>
+                          )}
+                          {place.description && (
+                            <p style={{
+                              margin: 0, fontSize: 13, color: '#4b5563',
+                              display: '-webkit-box', WebkitLineClamp: 2,
+                              WebkitBoxOrient: 'vertical', overflow: 'hidden',
+                            }}>
+                              {place.description}
+                            </p>
+                          )}
+                        </div>
+
+                        {/* Actions */}
+                        <div style={{
+                          padding: '12px 16px',
+                          borderTop: '1px solid #f3f4f6',
+                          display: 'flex', gap: 8,
+                        }}>
+                          <button
+                            className="btn-edit"
+                            onClick={() => handleEdit(place)}
+                            style={{
+                              flex: 1, padding: '8px 0', borderRadius: 8,
+                              background: '#fef3c7', color: '#92400e',
+                              border: '1.5px solid #fcd34d', fontSize: 13,
+                              fontWeight: 600, cursor: 'pointer',
+                              transition: 'background 0.2s',
+                            }}
+                          >
+                            ✏️ Editar
+                          </button>
+                          <button
+                            className="btn-delete"
+                            onClick={() => handleDelete(place.id)}
+                            disabled={deletingId === place.id}
+                            style={{
+                              flex: 1, padding: '8px 0', borderRadius: 8,
+                              background: deletingId === place.id ? '#f9a8a8' : '#fee2e2',
+                              color: '#991b1b',
+                              border: '1.5px solid #fca5a5', fontSize: 13,
+                              fontWeight: 600, cursor: deletingId === place.id ? 'not-allowed' : 'pointer',
+                              transition: 'background 0.2s',
+                            }}
+                          >
+                            {deletingId === place.id ? '...' : '🗑️ Eliminar'}
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  )
+                })}
+              </div>
+            )}
+          </div>
+
+        </div>
+      </div>
+    </>
   )
 }

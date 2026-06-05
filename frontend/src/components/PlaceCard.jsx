@@ -1,31 +1,91 @@
 export default function PlaceCard({ place, categoryInfo }) {
-  const fallbackImg = `https://placehold.co/400x250/e2e8f0/4a5568?text=${encodeURIComponent(place.name)}`
+  const fallbackImg = `https://placehold.co/600x400/${
+    (categoryInfo?.bg || '#2F7C91').replace('#', '')
+  }/ffffff?text=${encodeURIComponent(place.name)}`
 
   return (
-    <div className="card place-card h-100 shadow-sm border-0" style={{ borderRadius: 12, overflow: 'hidden', borderTop: '4px solid var(--color-naranja)', background: 'var(--color-crema)', transition: 'transform 0.25s ease, box-shadow 0.25s ease' }}>
-      <img
-        src={place.imageUrl || fallbackImg}
-        alt={place.name}
-        className="card-img-top place-card-image"
-        style={{ height: 200, objectFit: 'cover', transition: 'transform 0.25s ease' }}
-        onError={(e) => { e.target.src = fallbackImg }}
-      />
-      <div className="card-body d-flex flex-column">
-        <div className="d-flex align-items-center gap-2 mb-2">
-          <span className="badge" style={{ background: 'var(--color-azul-oceano)', color: 'var(--color-crema)' }}>
-            {categoryInfo?.emoji} {categoryInfo?.label || place.category}
-          </span>
-        </div>
-        <h5 className="card-title fw-bold mb-1" style={{ color: 'var(--color-verde-oscuro)' }}>{place.name}</h5>
-        <p className="card-text text-muted small flex-grow-1">{place.description}</p>
-        {place.address && (
-          <p className="card-text mt-2">
-            <small className="text-muted">
-              <span className="me-1">📍</span>{place.address}
-            </small>
-          </p>
+    <div
+      className="place-card"
+      style={{
+        background: 'white', borderRadius: 18,
+        overflow: 'hidden', height: '100%',
+        display: 'flex', flexDirection: 'column',
+        boxShadow: '0 4px 20px rgba(0,0,0,0.10)',
+        transition: 'transform 0.25s ease, box-shadow 0.25s ease',
+        cursor: 'default',
+      }}
+    >
+      {/* Image */}
+      <div style={{ position: 'relative', height: 210, overflow: 'hidden', flexShrink: 0 }}>
+        <img
+          src={place.imageUrl || fallbackImg}
+          alt={place.name}
+          className="place-card-image"
+          style={{ width: '100%', height: '100%', objectFit: 'cover', transition: 'transform 0.35s ease' }}
+          onError={(e) => { e.target.src = fallbackImg }}
+        />
+        {/* Gradient overlay */}
+        <div style={{
+          position: 'absolute', inset: 0,
+          background: 'linear-gradient(to top, rgba(0,0,0,0.45) 0%, transparent 55%)',
+          pointerEvents: 'none',
+        }} />
+
+        {/* Category badge */}
+        {categoryInfo && (
+          <div style={{
+            position: 'absolute', top: 12, left: 12,
+            background: categoryInfo.bg, color: 'white',
+            padding: '4px 12px', borderRadius: 20,
+            fontSize: 12, fontWeight: 700,
+            display: 'flex', alignItems: 'center', gap: 5,
+            boxShadow: '0 2px 8px rgba(0,0,0,0.2)',
+          }}>
+            {categoryInfo.emoji} {categoryInfo.label}
+          </div>
         )}
       </div>
+
+      {/* Body */}
+      <div style={{ padding: '18px 20px', flex: 1, display: 'flex', flexDirection: 'column', gap: 8 }}>
+        <h5 style={{
+          margin: 0, fontWeight: 800, fontSize: 18,
+          color: '#111827', lineHeight: 1.3,
+        }}>
+          {place.name}
+        </h5>
+
+        {place.description && (
+          <p style={{
+            margin: 0, fontSize: 14, color: '#6b7280', lineHeight: 1.6,
+            flex: 1,
+            display: '-webkit-box', WebkitLineClamp: 3,
+            WebkitBoxOrient: 'vertical', overflow: 'hidden',
+          }}>
+            {place.description}
+          </p>
+        )}
+
+        {place.address && (
+          <div style={{
+            display: 'flex', alignItems: 'center', gap: 6,
+            marginTop: 4,
+          }}>
+            <span style={{ fontSize: 14 }}>📍</span>
+            <span style={{ fontSize: 13, color: '#9ca3af', lineHeight: 1.4 }}>
+              {place.address}
+            </span>
+          </div>
+        )}
+      </div>
+
+      {/* Bottom accent */}
+      <div style={{
+        height: 4, flexShrink: 0,
+        background: categoryInfo
+          ? `linear-gradient(90deg, ${categoryInfo.bg}, ${categoryInfo.bg}88)`
+          : 'linear-gradient(90deg, #20606e, #2F7C91)',
+      }} />
     </div>
   )
 }
