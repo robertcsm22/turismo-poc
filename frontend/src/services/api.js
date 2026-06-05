@@ -44,4 +44,12 @@ export const userService = {
   getMe: () => api.get('/users/me').then((r) => r.data),
 }
 
+export const placeService = {
+  createPlace: (townId, placeData) =>
+    api.post(`/places/town/${townId}`, placeData).then((r) => r.data),
+
+  deletePlace: (id) =>
+    api.delete(`/places/${id}`),
+}
+
 export default api

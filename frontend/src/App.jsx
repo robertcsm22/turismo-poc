@@ -3,6 +3,8 @@ import { AuthProvider, useAuth } from './context/AuthContext'
 import LoginPage from './pages/LoginPage'
 import PlacesPage from './pages/PlacesPage'
 import ErrorPage from './pages/ErrorPage'
+import AdminPlacesPage from './pages/AdminPlacesPage'
+
 
 function PrivateRoute({ children }) {
   const { isAuthenticated, loading } = useAuth()
@@ -28,6 +30,7 @@ function AppRoutes() {
 
       {/* Login genérico */}
       <Route path="/login" element={<LoginPage />} />
+      <Route path="/admin/lugares" element={<AdminPlacesPage />} />
 
       {/* Error 404 */}
       <Route path="/error" element={<ErrorPage />} />
