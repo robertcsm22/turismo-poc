@@ -7,4 +7,5 @@ import java.util.List;
 public interface PlaceRepository extends JpaRepository<Place, Long> {
     List<Place> findByTownIdAndActiveTrue(Long townId);
     List<Place> findByTownSlugAndActiveTrue(String townSlug);
+    List<Place> findByActiveTrue();
 }
