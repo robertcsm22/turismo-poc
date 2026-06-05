@@ -26,6 +26,7 @@ export default function PlacesPage() {
   const [places, setPlaces] = useState([])
   const [filteredPlaces, setFilteredPlaces] = useState([])
   const [selectedCategory, setSelectedCategory] = useState('ALL')
+  const [searchTerm, setSearchTerm] = useState('')
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
 
@@ -46,14 +47,24 @@ export default function PlacesPage() {
       .finally(() => setLoading(false))
   }, [townSlug, navigate])
 
-  // Filtro por categoría
-  useEffect(() => {
-    if (selectedCategory === 'ALL') {
-      setFilteredPlaces(places)
-    } else {
-      setFilteredPlaces(places.filter((p) => p.category === selectedCategory))
-    }
-  }, [selectedCategory, places])
+ // Filtro por categoría y búsqueda
+useEffect(() => {
+  let result = [...places]
+
+  if (selectedCategory !== 'ALL') {
+    result = result.filter(
+      (p) => p.category === selectedCategory
+    )
+  }
+
+  if (searchTerm.trim() !== '') {
+    result = result.filter((p) =>
+      p.name.toLowerCase().includes(searchTerm.toLowerCase())
+    )
+  }
+
+  setFilteredPlaces(result)
+}, [selectedCategory, searchTerm, places])
 
   const categories = ['ALL', ...new Set(places.map((p) => p.category))]
 
@@ -80,6 +91,16 @@ export default function PlacesPage() {
             <p className="text-muted">{town.description}</p>
           </div>
         )}
+
+        <div className="mb-4">
+  <input
+    type="text"
+    className="form-control"
+    placeholder="Buscar lugar por nombre..."
+    value={searchTerm}
+    onChange={(e) => setSearchTerm(e.target.value)}
+  />
+</div>
 
         {/* Filtros por categoría (bonus) */}
         <div className="d-flex flex-wrap gap-2 mb-4">
