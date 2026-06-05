@@ -22,4 +22,22 @@ public class PlaceController {
                 placeService.createPlace(townId, placeDto)
         );
     }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<PlaceDto> updatePlace(
+            @PathVariable Long id,
+            @RequestBody PlaceDto placeDto) {
+
+        return ResponseEntity.ok(
+                placeService.updatePlace(id, placeDto)
+        );
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deletePlace(@PathVariable Long id) {
+
+        placeService.deletePlace(id);
+
+        return ResponseEntity.noContent().build();
+    }
 }
