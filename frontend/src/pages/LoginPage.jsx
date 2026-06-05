@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import { authService, townService } from '../services/api'
+import logo from '../assets/Logo de Santa Tereza.png'
 
 const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID
 
@@ -98,11 +99,11 @@ export default function LoginPage() {
 
   return (
     <div className="min-vh-100 d-flex align-items-center justify-content-center"
-         style={{ background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' }}>
-      <div className="card shadow-lg p-4 p-md-5" style={{ maxWidth: 420, width: '100%', borderRadius: 16 }}>
+         style={{ background: 'linear-gradient(135deg, #123C3A 0%, #2F7C91 100%)' }}>
+      <div className="card shadow-lg p-4 p-md-5" style={{ maxWidth: 420, width: '100%', borderRadius: 16, borderTop: '4px solid var(--color-naranja)', background: 'var(--color-crema)' }}>
         <div className="text-center mb-4">
-          <span style={{ fontSize: 48 }}>🌴</span>
-          <h1 className="h4 fw-bold mt-2 mb-0" style={{ color: '#2d3748' }}>
+          <img src={logo} alt="Logo Santa Teresa" height={120} style={{ objectFit: 'contain', width: 'auto' }} />
+          <h1 className="h4 fw-bold mt-2 mb-0" style={{ color: 'var(--color-verde-oscuro)' }}>
             {town ? town.name : 'Turismo Local'}
           </h1>
           {town?.province && (
@@ -122,7 +123,7 @@ export default function LoginPage() {
 
         {loading ? (
           <div className="text-center py-3">
-            <div className="spinner-border text-primary" role="status" />
+            <div className="spinner-border text-info" role="status" />
             <p className="mt-2 text-muted small">Verificando...</p>
           </div>
         ) : (

@@ -1,6 +1,5 @@
 package com.turismo.dto;
 
-import com.turismo.model.Place;
 import com.turismo.model.Town;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

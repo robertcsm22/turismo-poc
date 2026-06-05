@@ -29,6 +29,7 @@ export default function PlacesPage() {
   const [searchTerm, setSearchTerm] = useState('')
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
+  const [hoveredCategory, setHoveredCategory] = useState(null)
 
   useEffect(() => {
     Promise.all([
@@ -72,8 +73,8 @@ useEffect(() => {
     return (
       <div className="min-vh-100 d-flex align-items-center justify-content-center">
         <div className="text-center">
-          <div className="spinner-border text-primary mb-3" />
-          <p className="text-muted">Cargando lugares...</p>
+          <div className="spinner-border mb-3" style={{ color: 'var(--color-naranja)' }} />
+          <p className="text-white">Cargando lugares...</p>
         </div>
       </div>
     )
@@ -86,8 +87,8 @@ useEffect(() => {
       <div className="container py-4">
         {/* Header del pueblo */}
         {town && (
-          <div className="mb-4">
-            <h2 className="fw-bold">{town.name}</h2>
+          <div className="mb-4" style={{ background: 'var(--color-crema)', padding: '1.5rem', borderRadius: '12px', borderLeft: '4px solid var(--color-naranja)' }}>
+            <h2 className="fw-bold" style={{ color: 'var(--color-verde-oscuro)' }}>{town.name}</h2>
             <p className="text-muted">{town.description}</p>
           </div>
         )}
@@ -106,11 +107,25 @@ useEffect(() => {
         <div className="d-flex flex-wrap gap-2 mb-4">
           {categories.map((cat) => {
             const info = cat === 'ALL' ? { label: 'Todos', emoji: '🗺️' } : CATEGORY_LABELS[cat]
+            const isHovered = hoveredCategory === cat
             return (
               <button
                 key={cat}
-                className={`btn btn-sm ${selectedCategory === cat ? 'btn-primary' : 'btn-outline-secondary'}`}
+                className={`btn btn-sm`}
                 onClick={() => setSelectedCategory(cat)}
+                onMouseEnter={() => setHoveredCategory(cat)}
+                onMouseLeave={() => setHoveredCategory(null)}
+                style={{
+                  background: selectedCategory === cat 
+                    ? 'var(--color-verde-selva)' 
+                    : isHovered 
+                    ? 'var(--color-azul-oceano)'
+                    : 'transparent',
+                  color: selectedCategory === cat || isHovered ? 'var(--color-crema)' : 'var(--color-crema)',
+                  border: '2px solid var(--color-arena)',
+                  transition: 'background 0.3s ease',
+                  cursor: 'pointer'
+                }}
               >
                 {info?.emoji} {info?.label || cat}
               </button>
@@ -120,7 +135,7 @@ useEffect(() => {
 
         {/* Grid de tarjetas */}
         {filteredPlaces.length === 0 ? (
-          <div className="text-center py-5 text-muted">
+          <div className="text-center py-5 text-white" style={{ background: 'rgba(255,255,255,0.1)', borderRadius: '12px', padding: '2rem' }}>
             <span style={{ fontSize: 48 }}>🔍</span>
             <p className="mt-2">No hay lugares en esta categoría.</p>
           </div>

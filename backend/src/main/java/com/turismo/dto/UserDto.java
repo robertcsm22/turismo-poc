@@ -1,6 +1,5 @@
 package com.turismo.dto;
 
-import com.turismo.model.Place;
 import com.turismo.model.User;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
