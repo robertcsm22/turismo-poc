@@ -19,8 +19,8 @@ public class AuthController {
      * Recibe el ID Token de Google y devuelve un JWT propio + datos del usuario.
      */
     @PostMapping("/google")
-    public ResponseEntity<AuthResponse> authenticateWithGoogle(@RequestBody GoogleAuthRequest request) {
-        AuthResponse response = authService.authenticateWithGoogle(request);
-        return ResponseEntity.ok(response);
-    }
+public ResponseEntity<AuthResponse> authenticateWithGoogle(@RequestBody GoogleAuthRequest request) {
+    AuthResponse response = authService.authenticateWithGoogle(request);
+    return ResponseEntity.ok(response);
+}
 }

@@ -5,20 +5,46 @@ import PlacesPage from './pages/PlacesPage'
 import ErrorPage from './pages/ErrorPage'
 import AdminPlacesPage from './pages/AdminPlacesPage'
 
-
 function PrivateRoute({ children }) {
   const { isAuthenticated, loading } = useAuth()
-  if (loading) return <div className="d-flex justify-content-center mt-5"><div className="spinner-border" /></div>
-  return isAuthenticated() ? children : <Navigate to="/login" replace />
+
+  if (loading) {
+    return (
+      <div className="d-flex justify-content-center mt-5">
+        <div className="spinner-border" />
+      </div>
+    )
+  }
+
+  return isAuthenticated()
+    ? children
+    : <Navigate to="/login" replace />
+}
+
+function AdminRoute({ children }) {
+  const { user, loading } = useAuth()
+
+  if (loading) {
+    return (
+      <div className="d-flex justify-content-center mt-5">
+        <div className="spinner-border" />
+      </div>
+    )
+  }
+
+  return user?.role === 'ADMIN'
+    ? children
+    : <Navigate to="/error" replace />
 }
 
 function AppRoutes() {
   return (
     <Routes>
-      {/* Al escanear el QR: /p/santa-teresa */}
+
+      {/* Al escanear el QR */}
       <Route path="/p/:townSlug" element={<LoginPage />} />
 
-      {/* Lista de lugares (protegida) */}
+      {/* Lugares */}
       <Route
         path="/lugares/:townSlug"
         element={
@@ -28,16 +54,28 @@ function AppRoutes() {
         }
       />
 
-      {/* Login genérico */}
+      {/* Login */}
       <Route path="/login" element={<LoginPage />} />
-      <Route path="/admin/lugares" element={<AdminPlacesPage />} />
 
-      {/* Error 404 */}
+      {/* Administración */}
+      <Route
+        path="/admin/lugares"
+        element={
+          <AdminRoute>
+            <AdminPlacesPage />
+          </AdminRoute>
+        }
+      />
+
+      {/* Error */}
       <Route path="/error" element={<ErrorPage />} />
 
-      {/* Ruta raíz */}
+      {/* Inicio */}
       <Route path="/" element={<Navigate to="/login" replace />} />
+
+      {/* 404 */}
       <Route path="*" element={<ErrorPage />} />
+
     </Routes>
   )
 }

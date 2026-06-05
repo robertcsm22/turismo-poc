@@ -37,7 +37,7 @@ export default function LoginPage() {
     try {
       const authResponse = await authService.loginWithGoogle(response.credential)
       login(authResponse)
-      navigate(townSlug ? `/lugares/${townSlug}` : '/')
+      navigate(townSlug ? `/lugares/${townSlug}` : '/lugares/santa-teresa')
     } catch (err) {
       setError(err.response?.data?.message || 'Error al iniciar sesión. Intenta de nuevo.')
       setLoading(false)

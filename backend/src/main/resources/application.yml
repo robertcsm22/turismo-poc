@@ -18,7 +18,7 @@ spring:
 
 # Google OAuth2 Config
 google:
-  client-id: ${GOOGLE_CLIENT_ID}   # Se configura en GitHub Secrets / .env local
+  client-id: ${GOOGLE_CLIENT_ID:}   # Se configura en GitHub Secrets / .env local
 
 # JWT Config
 jwt:

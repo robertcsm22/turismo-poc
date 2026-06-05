@@ -1,5 +1,5 @@
 import { useAuth } from '../context/AuthContext'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, Link } from 'react-router-dom'
 
 export default function Navbar({ town, user }) {
   const { logout } = useAuth()
@@ -31,6 +31,15 @@ export default function Navbar({ town, user }) {
               />
             )}
             <span className="text-white d-none d-md-block small">{user.name}</span>
+
+            {user.role === 'ADMIN' && (
+             <Link
+                to="/admin/lugares"
+                className="btn btn-warning btn-sm"
+             >
+                ⚙️ Administrar
+               </Link>
+              )}
             <button className="btn btn-outline-light btn-sm" onClick={handleLogout}>
               Salir
             </button>
