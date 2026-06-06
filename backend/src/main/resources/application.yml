@@ -3,7 +3,7 @@ server:
 
 spring:
   datasource:
-    url: jdbc:postgresql://postgres.railway.internal:5432/railway
+    url: jdbc:postgresql://metro.proxy.rlwy.net:17235/railway
     username: postgres
     password: PlfkuKaVCVcenFwvxcKDYpxLdVcitpwn
     driver-class-name: org.postgresql.Driver
