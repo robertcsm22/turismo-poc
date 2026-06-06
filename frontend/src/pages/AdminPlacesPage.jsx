@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import { placeService, townService } from '../services/api'
@@ -16,7 +16,136 @@ const CATEGORIES = {
   OTRO:        { label: 'Otro',         icon: '📍', bg: '#64748b', light: '#f1f5f9' },
 }
 
-const EMPTY_FORM = { name: '', description: '', category: 'PARQUE', address: '', imageUrl: '' }
+const EMPTY_FORM = { name: '', description: '', category: 'PARQUE', address: '', imageUrl: '', latitude: '', longitude: '' }
+
+// Centro por defecto de Santa Teresa, Costa Rica
+const DEFAULT_CENTER = [9.6466, -85.1700]
+
+function CoordPicker({ latitude, longitude, onChange }) {
+  const mapRef = useRef(null)
+  const mapInstanceRef = useRef(null)
+  const markerRef = useRef(null)
+
+  useEffect(() => {
+    const loadLeaflet = () => {
+      const L = window.L
+      if (!mapRef.current || mapInstanceRef.current) return
+
+      const lat = parseFloat(latitude) || DEFAULT_CENTER[0]
+      const lng = parseFloat(longitude) || DEFAULT_CENTER[1]
+
+      const map = L.map(mapRef.current, { zoomControl: true }).setView([lat, lng], 14)
+      mapInstanceRef.current = map
+
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '© OpenStreetMap contributors',
+      }).addTo(map)
+
+      if (latitude && longitude) {
+        markerRef.current = L.marker([lat, lng], { draggable: true }).addTo(map)
+        markerRef.current.on('dragend', (e) => {
+          const pos = e.target.getLatLng()
+          onChange(pos.lat.toFixed(6), pos.lng.toFixed(6))
+        })
+      }
+
+      map.on('click', (e) => {
+        const { lat, lng } = e.latlng
+        if (markerRef.current) {
+          markerRef.current.setLatLng([lat, lng])
+        } else {
+          markerRef.current = L.marker([lat, lng], { draggable: true }).addTo(map)
+          markerRef.current.on('dragend', (ev) => {
+            const pos = ev.target.getLatLng()
+            onChange(pos.lat.toFixed(6), pos.lng.toFixed(6))
+          })
+        }
+        onChange(lat.toFixed(6), lng.toFixed(6))
+      })
+    }
+
+    if (!document.querySelector('link[href*="leaflet"]')) {
+      const link = document.createElement('link')
+      link.rel = 'stylesheet'
+      link.href = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css'
+      document.head.appendChild(link)
+    }
+
+    if (window.L) {
+      loadLeaflet()
+    } else {
+      const existing = document.querySelector('script[src*="leaflet"]')
+      if (existing) {
+        existing.addEventListener('load', loadLeaflet)
+      } else {
+        const script = document.createElement('script')
+        script.src = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js'
+        script.onload = loadLeaflet
+        document.head.appendChild(script)
+      }
+    }
+
+    return () => {
+      if (mapInstanceRef.current) {
+        mapInstanceRef.current.remove()
+        mapInstanceRef.current = null
+        markerRef.current = null
+      }
+    }
+  }, [])
+
+  // Sync marker when lat/lng change externally (e.g. manual input)
+  useEffect(() => {
+    const map = mapInstanceRef.current
+    const L = window.L
+    if (!map || !L) return
+    const lat = parseFloat(latitude)
+    const lng = parseFloat(longitude)
+    if (!lat || !lng) return
+    if (markerRef.current) {
+      markerRef.current.setLatLng([lat, lng])
+    } else {
+      markerRef.current = L.marker([lat, lng], { draggable: true }).addTo(map)
+      markerRef.current.on('dragend', (e) => {
+        const pos = e.target.getLatLng()
+        onChange(pos.lat.toFixed(6), pos.lng.toFixed(6))
+      })
+    }
+    map.setView([lat, lng], map.getZoom())
+  }, [latitude, longitude])
+
+  return (
+    <div>
+      <div
+        ref={mapRef}
+        style={{ height: 180, borderRadius: 10, overflow: 'hidden', border: '1.5px solid #d1d5db', cursor: 'crosshair' }}
+      />
+      <p style={{ margin: '6px 0 0', fontSize: 11, color: '#9ca3af' }}>
+        Haz clic en el mapa para colocar el marcador, o arrástralo para ajustarlo.
+      </p>
+      <div style={{ display: 'flex', gap: 8, marginTop: 8 }}>
+        <div style={{ flex: 1 }}>
+          <label style={{ display: 'block', fontSize: 11, fontWeight: 600, color: '#374151', marginBottom: 3 }}>Latitud</label>
+          <input
+            type="number" step="any" placeholder="9.6466"
+            value={latitude}
+            onChange={e => onChange(e.target.value, longitude)}
+            style={{ width: '100%', padding: '7px 10px', borderRadius: 8, border: '1.5px solid #d1d5db', fontSize: 13, fontFamily: 'inherit' }}
+          />
+        </div>
+        <div style={{ flex: 1 }}>
+          <label style={{ display: 'block', fontSize: 11, fontWeight: 600, color: '#374151', marginBottom: 3 }}>Longitud</label>
+          <input
+            type="number" step="any" placeholder="-85.1700"
+            value={longitude}
+            onChange={e => onChange(latitude, e.target.value)}
+            style={{ width: '100%', padding: '7px 10px', borderRadius: 8, border: '1.5px solid #d1d5db', fontSize: 13, fontFamily: 'inherit' }}
+          />
+        </div>
+      </div>
+    </div>
+  )
+}
 
 function Toast({ toast }) {
   if (!toast) return null
@@ -82,19 +211,36 @@ export default function AdminPlacesPage() {
 
   const handleSubmit = async (e) => {
     e.preventDefault()
+    if (!town?.id) {
+      showToast('Error: no se pudo cargar el municipio', 'error')
+      return
+    }
     try {
+      const payload = {
+        ...formData,
+        latitude: formData.latitude !== '' ? parseFloat(formData.latitude) : null,
+        longitude: formData.longitude !== '' ? parseFloat(formData.longitude) : null,
+      }
       if (editingId) {
-        await placeService.updatePlace(editingId, formData)
+        await placeService.updatePlace(editingId, payload)
         showToast('Lugar actualizado correctamente')
       } else {
-        await placeService.createPlace(1, formData)
+        await placeService.createPlace(town.id, payload)
         showToast('Lugar creado correctamente')
       }
       setEditingId(null)
       setFormData(EMPTY_FORM)
       loadPlaces()
-    } catch {
-      showToast('Error al guardar el lugar', 'error')
+    } catch (err) {
+      console.error('Error al guardar lugar:', err?.response?.data ?? err)
+      const status = err?.response?.status
+      if (status === 401 || status === 403) {
+        showToast('Sin permisos para realizar esta acción', 'error')
+      } else if (status === 400) {
+        showToast('Datos inválidos, revisa el formulario', 'error')
+      } else {
+        showToast('Error al guardar el lugar', 'error')
+      }
     }
   }
 
@@ -119,6 +265,8 @@ export default function AdminPlacesPage() {
       category: place.category || 'PARQUE',
       address: place.address || '',
       imageUrl: place.imageUrl || '',
+      latitude: place.latitude != null ? String(place.latitude) : '',
+      longitude: place.longitude != null ? String(place.longitude) : '',
     })
     window.scrollTo({ top: 0, behavior: 'smooth' })
   }
@@ -156,7 +304,6 @@ export default function AdminPlacesPage() {
       <Toast toast={toast} />
       <Navbar town={town} user={user} />
 
-      {/* Page Header */}
       <div style={{
         background: 'linear-gradient(135deg, #123C3A 0%, #20606e 60%, #2F7C91 100%)',
         padding: '36px 0 32px', color: 'white',
@@ -200,7 +347,6 @@ export default function AdminPlacesPage() {
       <div className="container" style={{ padding: '32px 16px 60px' }}>
         <div className="row g-4">
 
-          {/* Form Column */}
           <div className="col-lg-4">
             <div style={{
               background: 'white', borderRadius: 18, overflow: 'hidden',
@@ -225,39 +371,21 @@ export default function AdminPlacesPage() {
               <form onSubmit={handleSubmit} style={{ padding: 24, display: 'flex', flexDirection: 'column', gap: 16 }}>
                 <div>
                   <label style={labelStyle}>Nombre del lugar</label>
-                  <input
-                    className="admin-input"
-                    style={inputStyle}
-                    type="text"
-                    name="name"
-                    placeholder="Ej. Playa Bonita"
-                    value={formData.name}
-                    onChange={handleChange}
-                    required
-                  />
+                  <input className="admin-input" style={inputStyle} type="text" name="name"
+                    placeholder="Ej. Playa Bonita" value={formData.name} onChange={handleChange} required />
                 </div>
 
                 <div>
                   <label style={labelStyle}>Descripción</label>
-                  <textarea
-                    className="admin-input"
-                    style={{ ...inputStyle, minHeight: 90, resize: 'vertical' }}
-                    name="description"
-                    placeholder="Breve descripción del lugar..."
-                    value={formData.description}
-                    onChange={handleChange}
-                  />
+                  <textarea className="admin-input" style={{ ...inputStyle, minHeight: 90, resize: 'vertical' }}
+                    name="description" placeholder="Breve descripción del lugar..."
+                    value={formData.description} onChange={handleChange} />
                 </div>
 
                 <div>
                   <label style={labelStyle}>Categoría</label>
-                  <select
-                    className="admin-input"
-                    style={{ ...inputStyle, cursor: 'pointer' }}
-                    name="category"
-                    value={formData.category}
-                    onChange={handleChange}
-                  >
+                  <select className="admin-input" style={{ ...inputStyle, cursor: 'pointer' }}
+                    name="category" value={formData.category} onChange={handleChange}>
                     {Object.entries(CATEGORIES).map(([val, cfg]) => (
                       <option key={val} value={val}>{cfg.icon} {cfg.label}</option>
                     ))}
@@ -266,64 +394,49 @@ export default function AdminPlacesPage() {
 
                 <div>
                   <label style={labelStyle}>Dirección</label>
-                  <input
-                    className="admin-input"
-                    style={inputStyle}
-                    type="text"
-                    name="address"
-                    placeholder="Ej. Calle Principal, #10"
-                    value={formData.address}
-                    onChange={handleChange}
-                  />
+                  <input className="admin-input" style={inputStyle} type="text" name="address"
+                    placeholder="Ej. Calle Principal, #10" value={formData.address} onChange={handleChange} />
                 </div>
 
                 <div>
                   <label style={labelStyle}>URL de imagen</label>
-                  <input
-                    className="admin-input"
-                    style={inputStyle}
-                    type="text"
-                    name="imageUrl"
-                    placeholder="https://..."
-                    value={formData.imageUrl}
-                    onChange={handleChange}
-                  />
+                  <input className="admin-input" style={inputStyle} type="text" name="imageUrl"
+                    placeholder="https://..." value={formData.imageUrl} onChange={handleChange} />
                   {formData.imageUrl && (
                     <div style={{ marginTop: 10, borderRadius: 10, overflow: 'hidden', height: 120 }}>
-                      <img
-                        src={formData.imageUrl}
-                        alt="preview"
+                      <img src={formData.imageUrl} alt="preview"
                         style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                        onError={(e) => { e.target.style.display = 'none' }}
-                      />
+                        onError={(e) => { e.target.style.display = 'none' }} />
                     </div>
                   )}
                 </div>
 
+                <div>
+                  <label style={labelStyle}>Ubicación en el mapa</label>
+                  <CoordPicker
+                    latitude={formData.latitude}
+                    longitude={formData.longitude}
+                    onChange={(lat, lng) => setFormData(prev => ({ ...prev, latitude: lat, longitude: lng }))}
+                  />
+                </div>
+
                 <div style={{ display: 'flex', gap: 10, marginTop: 4 }}>
-                  <button
-                    className="btn-submit"
-                    type="submit"
-                    style={{
-                      flex: 1, padding: '11px 0',
-                      background: editingId ? '#d97706' : '#20606e',
-                      color: 'white', border: 'none', borderRadius: 10,
-                      fontWeight: 700, fontSize: 15, cursor: 'pointer',
-                      transition: 'background 0.2s',
-                    }}
-                  >
+                  <button className="btn-submit" type="submit" disabled={!town} style={{
+                    flex: 1, padding: '11px 0',
+                    background: !town ? '#9ca3af' : editingId ? '#d97706' : '#20606e',
+                    color: 'white', border: 'none', borderRadius: 10,
+                    fontWeight: 700, fontSize: 15,
+                    cursor: !town ? 'not-allowed' : 'pointer',
+                    transition: 'background 0.2s',
+                  }}>
                     {editingId ? 'Guardar cambios' : 'Crear lugar'}
                   </button>
                   {editingId && (
-                    <button
-                      type="button"
-                      onClick={handleCancel}
-                      style={{
-                        padding: '11px 16px', background: '#f1f5f9',
-                        color: '#64748b', border: 'none', borderRadius: 10,
-                        fontWeight: 600, fontSize: 14, cursor: 'pointer',
-                      }}
-                    >
+                    <button type="button" onClick={handleCancel} style={{
+                      padding: '11px 16px', background: '#f1f5f9',
+                      color: '#64748b', border: 'none', borderRadius: 10,
+                      fontWeight: 600, fontSize: 14, cursor: 'pointer',
+                    }}>
                       Cancelar
                     </button>
                   )}
@@ -332,7 +445,6 @@ export default function AdminPlacesPage() {
             </div>
           </div>
 
-          {/* Places List Column */}
           <div className="col-lg-8">
             {places.length === 0 ? (
               <div style={{
@@ -351,23 +463,16 @@ export default function AdminPlacesPage() {
                   const cfg = CATEGORIES[place.category] || CATEGORIES.OTRO
                   return (
                     <div key={place.id} className="col-md-6">
-                      <div
-                        className="place-admin-card"
-                        style={{
-                          background: 'white', borderRadius: 16,
-                          overflow: 'hidden', boxShadow: '0 2px 12px rgba(0,0,0,0.08)',
-                          display: 'flex', flexDirection: 'column', height: '100%',
-                        }}
-                      >
-                        {/* Image */}
+                      <div className="place-admin-card" style={{
+                        background: 'white', borderRadius: 16,
+                        overflow: 'hidden', boxShadow: '0 2px 12px rgba(0,0,0,0.08)',
+                        display: 'flex', flexDirection: 'column', height: '100%',
+                      }}>
                         <div style={{ position: 'relative', height: 140, overflow: 'hidden', background: '#f3f4f6' }}>
                           {place.imageUrl ? (
-                            <img
-                              src={place.imageUrl}
-                              alt={place.name}
+                            <img src={place.imageUrl} alt={place.name}
                               style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                              onError={(e) => { e.target.style.display = 'none' }}
-                            />
+                              onError={(e) => { e.target.style.display = 'none' }} />
                           ) : (
                             <div style={{
                               width: '100%', height: '100%',
@@ -378,14 +483,11 @@ export default function AdminPlacesPage() {
                               {cfg.icon}
                             </div>
                           )}
-                          <div style={{
-                            position: 'absolute', top: 10, right: 10,
-                          }}>
+                          <div style={{ position: 'absolute', top: 10, right: 10 }}>
                             <CategoryBadge category={place.category} />
                           </div>
                         </div>
 
-                        {/* Content */}
                         <div style={{ padding: '14px 16px', flex: 1 }}>
                           <h6 style={{ margin: '0 0 6px', fontWeight: 700, fontSize: 16, color: '#111827' }}>
                             {place.name}
@@ -406,38 +508,23 @@ export default function AdminPlacesPage() {
                           )}
                         </div>
 
-                        {/* Actions */}
-                        <div style={{
-                          padding: '12px 16px',
-                          borderTop: '1px solid #f3f4f6',
-                          display: 'flex', gap: 8,
-                        }}>
-                          <button
-                            className="btn-edit"
-                            onClick={() => handleEdit(place)}
-                            style={{
-                              flex: 1, padding: '8px 0', borderRadius: 8,
-                              background: '#fef3c7', color: '#92400e',
-                              border: '1.5px solid #fcd34d', fontSize: 13,
-                              fontWeight: 600, cursor: 'pointer',
-                              transition: 'background 0.2s',
-                            }}
-                          >
+                        <div style={{ padding: '12px 16px', borderTop: '1px solid #f3f4f6', display: 'flex', gap: 8 }}>
+                          <button className="btn-edit" onClick={() => handleEdit(place)} style={{
+                            flex: 1, padding: '8px 0', borderRadius: 8,
+                            background: '#fef3c7', color: '#92400e',
+                            border: '1.5px solid #fcd34d', fontSize: 13,
+                            fontWeight: 600, cursor: 'pointer', transition: 'background 0.2s',
+                          }}>
                             ✏️ Editar
                           </button>
-                          <button
-                            className="btn-delete"
-                            onClick={() => handleDelete(place.id)}
-                            disabled={deletingId === place.id}
-                            style={{
+                          <button className="btn-delete" onClick={() => handleDelete(place.id)}
+                            disabled={deletingId === place.id} style={{
                               flex: 1, padding: '8px 0', borderRadius: 8,
                               background: deletingId === place.id ? '#f9a8a8' : '#fee2e2',
-                              color: '#991b1b',
-                              border: '1.5px solid #fca5a5', fontSize: 13,
+                              color: '#991b1b', border: '1.5px solid #fca5a5', fontSize: 13,
                               fontWeight: 600, cursor: deletingId === place.id ? 'not-allowed' : 'pointer',
                               transition: 'background 0.2s',
-                            }}
-                          >
+                            }}>
                             {deletingId === place.id ? '...' : '🗑️ Eliminar'}
                           </button>
                         </div>

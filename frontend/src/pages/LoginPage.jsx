@@ -24,8 +24,9 @@ const BEACH_IMAGES = [
   'https://images.unsplash.com/photo-1624398626187-747d62b4acfc?q=80&w=764&auto=format&fit=crop',
 ]
 
-const COLUMNS = Array.from({ length: 7 }, (_, i) =>
-  [BEACH_IMAGES[i * 2 % BEACH_IMAGES.length], BEACH_IMAGES[(i * 2 + 1) % BEACH_IMAGES.length]]
+// 4 columns, each with 4 images, duplicated for seamless infinite scroll
+const COLUMNS = [0, 1, 2, 3].map(ci =>
+  Array.from({ length: 4 }, (_, r) => BEACH_IMAGES[(ci * 4 + r) % BEACH_IMAGES.length])
 )
 
 export default function LoginPage() {
@@ -100,63 +101,41 @@ export default function LoginPage() {
     <div style={{ position: 'relative', minHeight: '100vh', overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
 
       <style>{`
-        .lp-flow {
-          position: absolute; inset: 0;
-          display: flex; align-items: center;
-          overflow: hidden; pointer-events: none;
-        }
-        .lp-col {
-          position: absolute; top: 0; left: 50%;
-          width: 220px; margin-left: -110px;
-          animation: lp-wave 80s linear infinite;
-        }
-        .lp-col:nth-child(1) { animation-delay: 0s; }
-        .lp-col:nth-child(2) { animation-delay: -11.5s; }
-        .lp-col:nth-child(3) { animation-delay: -23s; }
-        .lp-col:nth-child(4) { animation-delay: -34.5s; }
-        .lp-col:nth-child(5) { animation-delay: -46s; }
-        .lp-col:nth-child(6) { animation-delay: -57.5s; }
-        .lp-col:nth-child(7) { animation-delay: -69s; }
-        .lp-card {
-          width: 100%; height: 220px; overflow: hidden;
-          border-radius: 12px; margin-bottom: 20px;
-          box-shadow: 0 10px 28px rgba(0,0,0,0.3);
-        }
-        .lp-card img {
-          width: 100%; height: 100%; object-fit: cover; display: block;
-          animation: lp-jiggle 20s infinite alternate;
-        }
-        @keyframes lp-wave {
-          0%   { opacity: 0; transform: rotate(.1deg) translate3d(1400px, 10px, 0); }
-          5%   { opacity: 0; }
-          6%   { opacity: 1; }
-          50%  { transform: rotate(-.05deg) translate3d(0, 180px, 0); }
-          94%  { opacity: 1; }
-          95%  { opacity: 0; }
-          100% { opacity: 0; transform: rotate(.05deg) translate3d(-1400px, 10px, 0); }
-        }
-        @keyframes lp-jiggle {
-          0%,90% { transform: translate3d(-3px,-4px,0); }
-          10%    { transform: translate3d(0,-4px,0); }
-          20%    { transform: translate3d(-1px,-2px,0); }
-          30%    { transform: translate3d(3px,1px,0); }
-          40%    { transform: translate3d(-4px,-1px,0); }
-          50%    { transform: translate3d(-2px,-3px,0); }
-          60%    { transform: translate3d(-3px,-2px,0); }
-          70%    { transform: translate3d(-2px,5px,0); }
-          80%    { transform: translate3d(-1px,5px,0); }
-          100%   { transform: translate3d(-2px,-3px,0); }
-        }
+        /* Solo translateY — sin translate3d ni rotate para no romper popups de Google */
+        @keyframes lp-up   { from { transform: translateY(0); } to { transform: translateY(-50%); } }
+        @keyframes lp-down { from { transform: translateY(-50%); } to { transform: translateY(0); } }
+        .lp-col-up   { animation: lp-up   55s linear infinite; }
+        .lp-col-down { animation: lp-down 65s linear infinite; }
         @keyframes lp-spin { to { transform: rotate(360deg) } }
       `}</style>
 
-      {/* Columnas de fotos */}
-      <div className="lp-flow" style={{ zIndex: 0 }}>
+      {/* Fondo: 4 columnas con scroll vertical suave */}
+      <div style={{
+        position: 'absolute', inset: 0, zIndex: 0,
+        display: 'flex', gap: 8,
+        isolation: 'isolate',
+        pointerEvents: 'none',
+        overflow: 'hidden',
+      }}>
         {COLUMNS.map((imgs, ci) => (
-          <div key={ci} className="lp-col">
-            {imgs.map((src, ii) => (
-              <div key={ii} className="lp-card">
-                <img src={src} alt="" loading="lazy" />
+          <div
+            key={ci}
+            className={ci % 2 === 0 ? 'lp-col-up' : 'lp-col-down'}
+            style={{
+              flex: 1,
+              display: 'flex',
+              flexDirection: 'column',
+              gap: 8,
+              marginTop: ci % 2 === 1 ? '-120px' : 0,
+            }}
+          >
+            {/* Duplicamos para scroll infinito sin saltos */}
+            {[...imgs, ...imgs, ...imgs].map((src, ii) => (
+              <div key={ii} style={{ borderRadius: 10, overflow: 'hidden', flexShrink: 0 }}>
+                <img
+                  src={src} alt="" loading="lazy"
+                  style={{ width: '100%', aspectRatio: '3/4', objectFit: 'cover', display: 'block' }}
+                />
               </div>
             ))}
           </div>
@@ -166,7 +145,7 @@ export default function LoginPage() {
       {/* Overlay */}
       <div style={{
         position: 'absolute', inset: 0, zIndex: 1,
-        background: 'linear-gradient(135deg, rgba(13,43,42,0.45) 0%, rgba(47,124,145,0.4) 100%)',
+        background: 'linear-gradient(135deg, rgba(13,43,42,0.55) 0%, rgba(47,124,145,0.5) 100%)',
       }} />
 
       {/* Card de login */}
@@ -222,7 +201,37 @@ export default function LoginPage() {
             </div>
           )}
 
-          <p style={{ textAlign: 'center', color: '#94a3b8', fontSize: 11, margin: '20px 0 0' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10, margin: '18px 0 14px' }}>
+            <div style={{ flex: 1, height: 1, background: '#e2e8f0' }} />
+            <span style={{ color: '#cbd5e1', fontSize: 11, fontWeight: 600 }}>o</span>
+            <div style={{ flex: 1, height: 1, background: '#e2e8f0' }} />
+          </div>
+
+          <div style={{ display: 'flex', justifyContent: 'center' }}>
+            <button
+              onClick={() => navigate(`/qr/${townSlug || 'santa-teresa'}`)}
+              style={{
+                display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
+                width: 280, padding: '10px 0',
+                background: 'white', color: '#123C3A',
+                border: '1.5px solid #cbd5e1', borderRadius: 8,
+                fontSize: 14, fontWeight: 600, cursor: 'pointer',
+                transition: 'border-color 0.2s, box-shadow 0.2s',
+              }}
+              onMouseEnter={e => { e.currentTarget.style.borderColor = '#123C3A'; e.currentTarget.style.boxShadow = '0 2px 8px rgba(18,60,58,0.15)' }}
+              onMouseLeave={e => { e.currentTarget.style.borderColor = '#cbd5e1'; e.currentTarget.style.boxShadow = 'none' }}
+            >
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/>
+                <rect x="3" y="14" width="7" height="7"/>
+                <rect x="14" y="14" width="3" height="3"/><rect x="18" y="14" width="3" height="3"/>
+                <rect x="14" y="18" width="3" height="3"/><rect x="18" y="18" width="3" height="3"/>
+              </svg>
+              Ver código QR del destino
+            </button>
+          </div>
+
+          <p style={{ textAlign: 'center', color: '#94a3b8', fontSize: 11, margin: '16px 0 0' }}>
             Solo se aceptan cuentas @gmail.com
           </p>
         </div>

@@ -19,7 +19,7 @@ describe('PlaceCard', () => {
 
   it('renderiza el nombre del lugar', () => {
     render(<PlaceCard place={mockPlace} categoryInfo={categoryInfo} />)
-    expect(screen.getByText('Playa Santa Teresa')).toBeInTheDocument()
+    expect(screen.getByText('Playa Santa Teresaa')).toBeInTheDocument()
   })
 
   it('renderiza la categoría correcta', () => {

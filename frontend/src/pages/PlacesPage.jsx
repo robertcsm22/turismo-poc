@@ -178,13 +178,41 @@ function QRModal({ townSlug, town, onClose }) {
       onClick={e => e.target === e.currentTarget && onClose()}
       style={{ position:'fixed',inset:0,zIndex:9999,background:'rgba(0,0,0,0.65)',backdropFilter:'blur(4px)',display:'flex',alignItems:'center',justifyContent:'center',padding:16 }}
     >
+      <style>{`
+        @keyframes qr-scan {
+          0% { transform: translateY(0px); }
+          100% { transform: translateY(200px); }
+        }
+        .qr-scan-line {
+          position: absolute; left: 16px; right: 16px; height: 3px;
+          background: linear-gradient(90deg, transparent, #2F7C91, #F7A640, #2F7C91, transparent);
+          border-radius: 2px; animation: qr-scan 2s linear infinite;
+          box-shadow: 0 0 8px rgba(47,124,145,0.8), 0 0 16px rgba(247,166,64,0.4);
+          top: 16px; z-index: 10;
+        }
+        .qr-corner { position: absolute; width: 20px; height: 20px; border-color: #F7A640; border-style: solid; }
+        .qr-corner-tl { top: 8px; left: 8px; border-width: 3px 0 0 3px; border-radius: 4px 0 0 0; }
+        .qr-corner-tr { top: 8px; right: 8px; border-width: 3px 3px 0 0; border-radius: 0 4px 0 0; }
+        .qr-corner-bl { bottom: 8px; left: 8px; border-width: 0 0 3px 3px; border-radius: 0 0 0 4px; }
+        .qr-corner-br { bottom: 8px; right: 8px; border-width: 0 3px 3px 0; border-radius: 0 0 4px 0; }
+      `}</style>
       <div style={{ background:'white',borderRadius:20,padding:'36px 32px',textAlign:'center',maxWidth:360,width:'100%',boxShadow:'0 24px 64px rgba(0,0,0,0.4)' }}>
         <div style={{ fontSize:36,marginBottom:8 }}>📲</div>
         <h2 style={{ color:'#123C3A',fontWeight:800,margin:'0 0 4px',fontSize:20 }}>Código QR</h2>
         <p style={{ color:'#64748b',fontSize:13,margin:'0 0 24px' }}>{town?.name || townSlug} · {town?.province || 'Costa Rica'}</p>
-        <div style={{ display:'inline-flex',padding:16,background:'#f8fafc',borderRadius:16,border:'2px dashed #e2e8f0',marginBottom:16,minWidth:252,minHeight:252,alignItems:'center',justifyContent:'center' }}>
-          <div ref={qrRef} />
+
+        {/* QR con efecto scan */}
+        <div style={{ position:'relative',display:'inline-block',marginBottom:16 }}>
+          <div style={{ padding:16,background:'#f8fafc',borderRadius:16,border:'2px dashed #e2e8f0',minWidth:252,minHeight:252,display:'flex',alignItems:'center',justifyContent:'center',overflow:'hidden',position:'relative' }}>
+            {qrReady && <div className="qr-scan-line" />}
+            <div className="qr-corner qr-corner-tl" />
+            <div className="qr-corner qr-corner-tr" />
+            <div className="qr-corner qr-corner-bl" />
+            <div className="qr-corner qr-corner-br" />
+            <div ref={qrRef} />
+          </div>
         </div>
+
         <p style={{ color:'#94a3b8',fontSize:11,margin:'0 0 20px',lineHeight:1.5 }}>
           Escanear redirige a<br />
           <span style={{ color:'#123C3A',fontWeight:600,fontSize:12 }}>{window.location.origin}/login/{townSlug}</span>
@@ -266,7 +294,6 @@ function SunsetHero({ town, searchTerm, setSearchTerm, places, onShowMap, onShow
         .sh-btn-qr:hover{opacity:0.88;}
       `}</style>
 
-      {/* Escena sunset */}
       <div style={{ position:'relative',width:'100%',height:320,overflow:'hidden' }}>
         <div className="sh-sky" />
         <div className="sh-glow" />
@@ -277,7 +304,6 @@ function SunsetHero({ town, searchTerm, setSearchTerm, places, onShowMap, onShow
         </div>
         <div ref={birdsRef} style={{ position:'absolute',inset:0,zIndex:6,perspective:'600px',transformStyle:'preserve-3d' }} />
 
-        {/* Overlay de contenido */}
         <div style={{
           position:'absolute',inset:0,zIndex:10,
           background:'linear-gradient(180deg,rgba(0,0,0,0.05) 0%,rgba(0,0,0,0.6) 100%)',
@@ -318,7 +344,6 @@ function SunsetHero({ town, searchTerm, setSearchTerm, places, onShowMap, onShow
         </div>
       </div>
 
-      {/* Barra de búsqueda + stats */}
       <div style={{ background:'rgba(13,43,42,0.95)',backdropFilter:'blur(8px)',padding:'12px 5%',display:'flex',alignItems:'center',gap:24,flexWrap:'wrap' }}>
         <div style={{ position:'relative',flex:'1',minWidth:200,maxWidth:380 }}>
           <span style={{ position:'absolute',left:13,top:'50%',transform:'translateY(-50%)',fontSize:15,pointerEvents:'none' }}>🔍</span>
@@ -401,7 +426,6 @@ export default function PlacesPage() {
 
       <Navbar town={town} user={user} />
 
-      {/* ── Sunset Hero ── */}
       {town && (
         <SunsetHero
           town={town}
@@ -413,8 +437,7 @@ export default function PlacesPage() {
         />
       )}
 
-      {/* ── Category filters ── */}
-      <div className="container" style={{ marginTop: -2, position:'relative',zIndex:10, paddingTop: 20 }}>
+      <div className="container" style={{ marginTop:-2, position:'relative', zIndex:10, paddingTop:20 }}>
         <div style={{ background:'white',borderRadius:18,padding:'18px 20px',boxShadow:'0 8px 32px rgba(0,0,0,0.14)',display:'flex',gap:10,flexWrap:'wrap',alignItems:'center' }}>
           <span style={{ fontSize:13,fontWeight:600,color:'#6b7280',marginRight:4 }}>Filtrar:</span>
           {categories.map(cat => {
@@ -441,7 +464,6 @@ export default function PlacesPage() {
         </div>
       </div>
 
-      {/* ── Grid ── */}
       <div className="container" style={{ padding:'32px 16px 64px' }}>
         {filteredPlaces.length === 0 ? (
           <div style={{ background:'rgba(255,255,255,0.1)',borderRadius:18,padding:'64px 24px',textAlign:'center',color:'white',backdropFilter:'blur(4px)',border:'1px solid rgba(255,255,255,0.1)' }}>
@@ -470,11 +492,9 @@ export default function PlacesPage() {
         )}
       </div>
 
-      {/* ── Modals ── */}
       {showMap && <MapModal places={places} town={town} onClose={() => setShowMap(false)} />}
       {showQR && <QRModal townSlug={townSlug} town={town} onClose={() => setShowQR(false)} />}
-        
-         <TourismChatbot town={town} places={places} />
+      <TourismChatbot town={town} places={places} />
     </>
   )
 }

@@ -4,6 +4,7 @@ import com.turismo.dto.PlaceDto;
 import com.turismo.service.PlaceService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -13,6 +14,7 @@ public class PlaceController {
 
     private final PlaceService placeService;
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/town/{townId}")
     public ResponseEntity<PlaceDto> createPlace(
             @PathVariable Long townId,
@@ -23,6 +25,7 @@ public class PlaceController {
         );
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/{id}")
     public ResponseEntity<PlaceDto> updatePlace(
             @PathVariable Long id,
@@ -33,6 +36,7 @@ public class PlaceController {
         );
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deletePlace(@PathVariable Long id) {
 

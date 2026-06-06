@@ -46,6 +46,10 @@ function AppRoutes() {
       {/* Al escanear el QR */}
       <Route path="/p/:townSlug" element={<LoginPage />} />
 
+      {/* Login con y sin slug */}
+      <Route path="/login" element={<LoginPage />} />
+      <Route path="/login/:townSlug" element={<LoginPage />} />
+
       {/* Lugares */}
       <Route
         path="/lugares/:townSlug"
@@ -55,9 +59,6 @@ function AppRoutes() {
           </PrivateRoute>
         }
       />
-
-      {/* Login */}
-      <Route path="/login" element={<LoginPage />} />
 
       {/* Administración */}
       <Route
@@ -69,8 +70,9 @@ function AppRoutes() {
         }
       />
 
-        <Route path="/qr/:townSlug" element={<QRPage />} />
-        
+      {/* QR */}
+      <Route path="/qr/:townSlug" element={<QRPage />} />
+
       {/* Error */}
       <Route path="/error" element={<ErrorPage />} />
 
