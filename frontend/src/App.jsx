@@ -4,6 +4,8 @@ import LoginPage from './pages/LoginPage'
 import PlacesPage from './pages/PlacesPage'
 import ErrorPage from './pages/ErrorPage'
 import AdminPlacesPage from './pages/AdminPlacesPage'
+import QRPage from './pages/QRPage'
+
 
 function PrivateRoute({ children }) {
   const { isAuthenticated, loading } = useAuth()
@@ -67,6 +69,8 @@ function AppRoutes() {
         }
       />
 
+        <Route path="/qr/:townSlug" element={<QRPage />} />
+        
       {/* Error */}
       <Route path="/error" element={<ErrorPage />} />
 
