@@ -16,20 +16,16 @@ spring:
         dialect: org.hibernate.dialect.PostgreSQLDialect
         format_sql: true
 
-# Google OAuth2 Config
 google:
-  client-id: 762142748326-g5nthijmrgrgtqjafp9kvu6dkflu3o6h.apps.googleusercontent.com   # Se configura en GitHub Secrets / .env local
+  client-id: 762142748326-g5nthijmrgrgtqjafp9kvu6dkflu3o6h.apps.googleusercontent.com
 
-# JWT Config
 jwt:
   secret: ${JWT_SECRET:mi-secreto-super-seguro-para-desarrollo-local-123456789}
-  expiration-ms: 86400000  # 24 horas
+  expiration-ms: 86400000
 
-# CORS — ajustar al dominio del frontend en producción
 cors:
-  allowed-origins: ${CORS_ORIGINS:http://localhost:5173,http://localhost:3000}
+  allowed-origins: ${CORS_ORIGINS:http://localhost:5173,http://localhost:3000,https://turismo-poc-f40af.web.app}
 
-# Logs
 logging:
   level:
     com.turismo: DEBUG
