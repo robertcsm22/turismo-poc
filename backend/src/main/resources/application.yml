@@ -3,9 +3,9 @@ server:
 
 spring:
   datasource:
-    url: ${DATABASE_URL}
-    username: ${SPRING_DATASOURCE_USERNAME}
-    password: ${SPRING_DATASOURCE_PASSWORD}
+    url: jdbc:postgresql://postgres.railway.internal:5432/railway
+    username: postgres
+    password: PlfkuKaVCVcenFwvxcKDYpxLdVcitpwn
     driver-class-name: org.postgresql.Driver
   jpa:
     hibernate:
@@ -20,11 +20,11 @@ google:
   client-id: 762142748326-g5nthijmrgrgtqjafp9kvu6dkflu3o6h.apps.googleusercontent.com
 
 jwt:
-  secret: ${JWT_SECRET:mi-secreto-super-seguro-para-desarrollo-local-123456789}
+  secret: mi-secreto-super-seguro-para-produccion-2024
   expiration-ms: 86400000
 
 cors:
-  allowed-origins: ${CORS_ORIGINS:http://localhost:5173,http://localhost:3000,https://turismo-poc-f40af.web.app}
+  allowed-origins: http://localhost:5173,http://localhost:3000,https://turismo-poc-f40af.web.app
 
 logging:
   level:
