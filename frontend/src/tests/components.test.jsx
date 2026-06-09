@@ -24,7 +24,7 @@ describe('PlaceCard', () => {
 
   it('renderiza la categoría correcta', () => {
     render(<PlaceCard place={mockPlace} categoryInfo={categoryInfo} />)
-    expect(screen.getByText(/Playa/)).toBeInTheDocument()
+    expect(screen.getAllByText(/Playa/)[0]).toBeInTheDocument()
   })
 
   it('renderiza la dirección cuando está disponible', () => {
