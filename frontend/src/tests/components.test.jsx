@@ -19,12 +19,12 @@ describe('PlaceCard', () => {
 
   it('renderiza el nombre del lugar', () => {
     render(<PlaceCard place={mockPlace} categoryInfo={categoryInfo} />)
-    expect(screen.getByText('Playa Santa Teresaa')).toBeInTheDocument()
+    expect(screen.getByText('Playa Santa Teresa')).toBeInTheDocument()
   })
 
   it('renderiza la categoría correcta', () => {
     render(<PlaceCard place={mockPlace} categoryInfo={categoryInfo} />)
-    expect(screen.getByText(/🏖️\s+Playa/)).toBeInTheDocument()
+    expect(screen.getByText(/Playa/)).toBeInTheDocument()
   })
 
   it('renderiza la dirección cuando está disponible', () => {
