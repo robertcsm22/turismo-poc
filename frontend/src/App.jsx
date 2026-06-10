@@ -1,6 +1,7 @@
 import { Routes, Route, Navigate } from 'react-router-dom'
 import { AuthProvider, useAuth } from './context/AuthContext'
 import LoginPage from './pages/LoginPage'
+import DestinationsPage from './pages/DestinationsPage'
 import PlacesPage from './pages/PlacesPage'
 import ErrorPage from './pages/ErrorPage'
 import AdminPlacesPage from './pages/AdminPlacesPage'
@@ -62,6 +63,14 @@ function AppRoutes() {
 
       {/* Administración */}
       <Route
+        path="/admin/lugares/:townSlug"
+        element={
+          <AdminRoute>
+            <AdminPlacesPage />
+          </AdminRoute>
+        }
+      />
+      <Route
         path="/admin/lugares"
         element={
           <AdminRoute>
@@ -76,8 +85,18 @@ function AppRoutes() {
       {/* Error */}
       <Route path="/error" element={<ErrorPage />} />
 
+      {/* Selector de destinos (protegido) */}
+      <Route
+        path="/destinos"
+        element={
+          <PrivateRoute>
+            <DestinationsPage />
+          </PrivateRoute>
+        }
+      />
+
       {/* Inicio */}
-      <Route path="/" element={<Navigate to="/login" replace />} />
+      <Route path="/" element={<LoginPage />} />
 
       {/* 404 */}
       <Route path="*" element={<ErrorPage />} />

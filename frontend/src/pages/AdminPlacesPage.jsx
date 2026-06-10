@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import { placeService, townService } from '../services/api'
 import Navbar from '../components/Navbar'
@@ -185,6 +185,7 @@ function CategoryBadge({ category }) {
 export default function AdminPlacesPage() {
   const navigate = useNavigate()
   const { user } = useAuth()
+  const { townSlug = 'santa-teresa' } = useParams()
 
   const [town, setTown] = useState(null)
   const [places, setPlaces] = useState([])
@@ -199,12 +200,12 @@ export default function AdminPlacesPage() {
   }
 
   useEffect(() => {
-    townService.getTown('santa-teresa').then(setTown).catch(console.error)
+    townService.getTown(townSlug).then(setTown).catch(console.error)
     loadPlaces()
-  }, [])
+  }, [townSlug])
 
   const loadPlaces = () => {
-    townService.getPlaces('santa-teresa').then(setPlaces).catch(console.error)
+    townService.getPlaces(townSlug).then(setPlaces).catch(console.error)
   }
 
   const handleChange = (e) => setFormData({ ...formData, [e.target.name]: e.target.value })

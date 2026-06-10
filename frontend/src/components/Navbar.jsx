@@ -63,12 +63,27 @@ export default function Navbar({ town, user }) {
 
             {user.role === 'ADMIN' && (
              <Link
-                to="/admin/lugares"
+                to={`/admin/lugares/${town?.slug || 'santa-teresa'}`}
                 className="btn btn-warning btn-sm"
              >
                 ⚙️ Administrar
                </Link>
               )}
+            <button
+              className="btn btn-sm"
+              onClick={() => navigate('/destinos')}
+              style={{
+                background: 'rgba(255,255,255,0.15)',
+                color: 'white',
+                border: '1.5px solid rgba(255,255,255,0.35)',
+                fontWeight: 600,
+                transition: 'all 0.2s',
+              }}
+              onMouseEnter={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.28)' }}
+              onMouseLeave={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.15)' }}
+            >
+              ← Destinos
+            </button>
             <button className="btn btn-outline-light btn-sm" onClick={handleLogout}>
               Salir
             </button>

@@ -5,6 +5,7 @@ import { townService } from '../services/api'
 import PlaceCard from '../components/PlaceCard'
 import Navbar from '../components/Navbar'
 import TourismChatbot from '../components/TourismChatbot'
+import tropicalScene from '../assets/tropical-scene.svg'
 
 export const CATEGORY_CONFIG = {
   RESTAURANTE: { label: 'Restaurante',  emoji: '🍽️', bg: '#dc2626', light: '#fee2e2' },
@@ -270,19 +271,8 @@ function SunsetHero({ town, searchTerm, setSearchTerm, places, onShowMap, onShow
   return (
     <div style={{ position:'relative', width:'100%' }}>
       <style>{`
-        .sh-sky{position:absolute;inset:0;background:radial-gradient(ellipse at bottom,#FFD700 0%,#F4A300 15%,#E05A00 45%,#C0392B 70%,#7B1FA2 100%);}
-        .sh-glow{position:absolute;bottom:40%;left:50%;transform:translateX(-50%);width:120%;height:120px;background:radial-gradient(ellipse at center,rgba(255,220,100,0.55) 0%,transparent 70%);filter:blur(12px);}
-        .sh-sun{position:absolute;bottom:40%;left:50%;transform:translateX(-50%) translateY(50%);width:90px;height:45px;border-radius:90px 90px 0 0;background:linear-gradient(0deg,rgba(255,255,255,0.5) 0%,#fff 100%);filter:blur(3px);z-index:4;}
-        .sh-sea{position:absolute;bottom:0;left:0;right:0;height:40%;background:radial-gradient(ellipse at top,rgba(255,255,220,0.8) 0%,rgba(255,180,50,0.3) 10%,#5D1A00 100%);z-index:3;}
-        .sh-sea-shine{height:100%;background:linear-gradient(0deg,transparent 0%,rgba(255,200,50,0.15) 60%,rgba(255,220,100,0.35) 100%);}
-        .sh-waves{position:absolute;bottom:40%;left:50%;transform:translateX(-50%);z-index:5;}
-        .sh-wave{position:absolute;left:-60px;width:120px;height:10px;background:rgba(255,255,255,0.75);border-radius:50%;}
-        .sh-wave:nth-child(n+2){animation:sh-wave 2s linear infinite;}
-        .sh-wave:nth-child(2){animation-delay:-0.5s;}.sh-wave:nth-child(3){animation-delay:-1s;}
-        .sh-wave:nth-child(4){animation-delay:-1.5s;}.sh-wave:nth-child(5){animation-delay:-1.8s;}.sh-wave:nth-child(6){animation-delay:-2s;}
-        @keyframes sh-wave{0%{transform:translateY(0) scale(1) rotateZ(0);opacity:.8}50%{transform:translateY(30px) scale(.6) rotateZ(4deg);opacity:.5}100%{transform:translateY(40px) scale(0) rotateZ(-30deg);opacity:0}}
         .sh-bird{position:absolute;width:60px;animation:sh-fly linear infinite;}
-        .sh-wing{position:absolute;width:48%;height:14px;border-top:3px solid rgba(30,10,0,0.85);border-radius:50%;}
+        .sh-wing{position:absolute;width:48%;height:14px;border-top:3px solid rgba(30,10,0,0.7);border-radius:50%;}
         .sh-wl{transform-origin:100% 50%;animation:sh-wL .75s cubic-bezier(.445,.05,.55,.95) infinite alternate;}
         .sh-wr{right:0;transform-origin:0 50%;animation:sh-wR .75s cubic-bezier(.445,.05,.55,.95) infinite alternate;}
         @keyframes sh-fly{0%{opacity:0;transform:translateZ(500px)}15%{opacity:1}100%{opacity:.4;transform:translateZ(-100px) scale(.2)}}
@@ -294,14 +284,18 @@ function SunsetHero({ town, searchTerm, setSearchTerm, places, onShowMap, onShow
         .sh-btn-qr:hover{opacity:0.88;}
       `}</style>
 
-      <div style={{ position:'relative',width:'100%',height:320,overflow:'hidden' }}>
-        <div className="sh-sky" />
-        <div className="sh-glow" />
-        <div className="sh-sun" />
-        <div className="sh-sea"><div className="sh-sea-shine" /></div>
-        <div className="sh-waves">
-          {[0,1,2,3,4,5].map(i => <div key={i} className="sh-wave" />)}
-        </div>
+      <div style={{ position:'relative',width:'100%',height:340,overflow:'hidden' }}>
+        {/* Fondo: ilustración de atardecer tropical */}
+        <img
+          src={tropicalScene}
+          alt=""
+          style={{
+            position:'absolute',inset:0,
+            width:'100%',height:'100%',
+            objectFit:'cover',objectPosition:'center 40%',
+            pointerEvents:'none',
+          }}
+        />
         <div ref={birdsRef} style={{ position:'absolute',inset:0,zIndex:6,perspective:'600px',transformStyle:'preserve-3d' }} />
 
         <div style={{

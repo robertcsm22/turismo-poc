@@ -6,7 +6,7 @@ const api = axios.create({
 
 // Adjuntar el JWT en cada request automáticamente
 api.interceptors.request.use((config) => {
-  const token = localStorage.getItem('jwt_token')
+  const token = sessionStorage.getItem('jwt_token')
   if (token) {
     config.headers.Authorization = `Bearer ${token}`
   }
@@ -18,8 +18,8 @@ api.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response?.status === 401) {
-      localStorage.removeItem('jwt_token')
-      localStorage.removeItem('user_data')
+      sessionStorage.removeItem('jwt_token')
+      sessionStorage.removeItem('user_data')
       window.location.href = '/login'
     }
     return Promise.reject(error)

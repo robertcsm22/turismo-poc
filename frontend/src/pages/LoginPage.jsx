@@ -40,8 +40,8 @@ export default function LoginPage() {
   const [googleReady, setGoogleReady] = useState(false)
 
   useEffect(() => {
-    if (isAuthenticated() && townSlug) {
-      navigate(`/lugares/${townSlug}`, { replace: true })
+    if (isAuthenticated()) {
+      navigate(townSlug ? `/lugares/${townSlug}` : '/destinos', { replace: true })
     }
   }, [isAuthenticated, townSlug, navigate])
 
@@ -58,7 +58,7 @@ export default function LoginPage() {
     try {
       const authResponse = await authService.loginWithGoogle(response.credential)
       login(authResponse)
-      navigate(townSlug ? `/lugares/${townSlug}` : '/lugares/santa-teresa')
+      navigate(townSlug ? `/lugares/${townSlug}` : '/destinos')
     } catch (err) {
       setError(err.response?.data?.message || 'Error al iniciar sesión. Intenta de nuevo.')
       setLoading(false)
@@ -232,7 +232,7 @@ export default function LoginPage() {
           </div>
 
           <p style={{ textAlign: 'center', color: '#94a3b8', fontSize: 11, margin: '16px 0 0' }}>
-            Solo se aceptan cuentas @gmail.com
+            📷 Solo se aceptan cuentas @gmail.com
           </p>
         </div>
       </div>
