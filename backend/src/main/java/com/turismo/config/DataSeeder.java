@@ -25,6 +25,9 @@ public class DataSeeder {
         return args -> {
             seedSantaTeresa();
             seedTamarindo();
+            seedManuelAntonio();
+            seedJaco();
+            seedConchal();
         };
     }
 
@@ -196,5 +199,152 @@ public class DataSeeder {
                 .latitude(10.2972).longitude(-85.8371).town(town).build());
 
         log.info("Tamarindo sembrado: 5 lugares.");
+    }
+
+    private void seedManuelAntonio() {
+        if (townRepository.findBySlug("manuel-antonio").isPresent()) {
+            log.info("Manuel Antonio ya existe, se omite.");
+            return;
+        }
+        log.info("Sembrando Manuel Antonio...");
+
+        Town town = Town.builder()
+                .slug("manuel-antonio")
+                .name("Playa Manuel Antonio")
+                .description("El parque nacional más visitado de Costa Rica. Playas de arena blanca rodeadas de selva tropical, con monos, perezosos y una biodiversidad extraordinaria.")
+                .province("Puntarenas")
+                .imageUrl("https://images.unsplash.com/photo-1448375240586-882707db888b?w=800")
+                .build();
+        town = townRepository.save(town);
+
+        placeRepository.save(Place.builder()
+                .name("Parque Nacional Manuel Antonio").description("El parque más visitado de Costa Rica. Hogar de monos capuchinos, perezosos de dos dedos, mariposas gigantes y playas vírgenes dentro de la selva. Patrimonio natural de Costa Rica.")
+                .category(Place.Category.PARQUE).address("Quepos, Puntarenas, Costa Rica")
+                .imageUrl("https://images.unsplash.com/photo-1448375240586-882707db888b?w=800")
+                .latitude(9.3862).longitude(-84.1432).town(town).build());
+
+        placeRepository.save(Place.builder()
+                .name("Playa Manuel Antonio").description("Playa de arena blanca dentro del parque nacional, rodeada de vegetación tropical. Aguas cristalinas perfectas para nadar y hacer snorkel entre peces tropicales.")
+                .category(Place.Category.PLAYA).address("Parque Nacional Manuel Antonio, Quepos")
+                .imageUrl("https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=800")
+                .latitude(9.3848).longitude(-84.1429).town(town).build());
+
+        placeRepository.save(Place.builder()
+                .name("El Avión Restaurant").description("Restaurante único instalado dentro de un avión de transporte C-123 de la era de los Contras. Mariscos de primera, cocteles tropicales y una historia fascinante. Vista panorámica al Pacífico.")
+                .category(Place.Category.RESTAURANTE).address("Carretera a Manuel Antonio, Quepos, Puntarenas")
+                .imageUrl("https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=800")
+                .latitude(9.3981).longitude(-84.1574).town(town).build());
+
+        placeRepository.save(Place.builder()
+                .name("Hotel Si Como No Resort").description("Eco-resort boutique en la colina con vista al Pacífico. Piscinas de infinito, restaurante de altura, spa y tours de naturaleza. Certificado de Sostenibilidad Turística nivel 5.")
+                .category(Place.Category.HOTEL).address("Manuel Antonio, Quepos, Puntarenas")
+                .imageUrl("https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?w=800")
+                .latitude(9.3921).longitude(-84.1543).town(town).build());
+
+        placeRepository.save(Place.builder()
+                .name("Mirador Punta Quepos").description("Mirador natural en los acantilados de Quepos con vista de 180° al Océano Pacífico. El lugar ideal para ver delfines, pelícanos y el atardecer más hermoso de la costa.")
+                .category(Place.Category.MIRADOR).address("Punta Quepos, Quepos, Puntarenas")
+                .imageUrl("https://images.unsplash.com/photo-1500534314209-a25ddb2bd429?w=800")
+                .latitude(9.4088).longitude(-84.1593).town(town).build());
+
+        log.info("Manuel Antonio sembrado: 5 lugares.");
+    }
+
+    private void seedJaco() {
+        if (townRepository.findBySlug("jaco").isPresent()) {
+            log.info("Jacó ya existe, se omite.");
+            return;
+        }
+        log.info("Sembrando Jacó...");
+
+        Town town = Town.builder()
+                .slug("jaco")
+                .name("Playa Jacó")
+                .description("La playa más accesible desde San José, a solo 1.5 horas. Centro de surf, vida nocturna y aventura de la costa central. Punto de partida para explorar Carara y los cocodrilos del Tárcoles.")
+                .province("Puntarenas")
+                .imageUrl("https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800")
+                .build();
+        town = townRepository.save(town);
+
+        placeRepository.save(Place.builder()
+                .name("Playa Jacó").description("Playa de arena negra volcánica de 4 km. Famosa por olas consistentes para surf intermedio-avanzado, atardeceres naranjas sobre el Pacífico y ambiente vibrante durante todo el año.")
+                .category(Place.Category.PLAYA).address("Playa Jacó, Garabito, Puntarenas")
+                .imageUrl("https://images.unsplash.com/photo-1519046904884-53103b34b206?w=800")
+                .latitude(9.6143).longitude(-84.6277).town(town).build());
+
+        placeRepository.save(Place.builder()
+                .name("El Barco Restaurant").description("El marisquería más querida de Jacó con más de 20 años frente al mar. Ceviche tico, arroces con mariscos, corvina al ajillo y el mejor atún fresco del Pacífico Central.")
+                .category(Place.Category.RESTAURANTE).address("Av. Pastor Díaz, Jacó, Garabito, Puntarenas")
+                .imageUrl("https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=800")
+                .latitude(9.6149).longitude(-84.6283).town(town).build());
+
+        placeRepository.save(Place.builder()
+                .name("Parque Nacional Carara").description("Zona de transición entre el trópico seco y húmedo. Hogar de la mayor colonia de lapas rojas de Costa Rica. El Río Tárcoles junto a la entrada alberga decenas de cocodrilos observables desde el puente.")
+                .category(Place.Category.PARQUE).address("Ruta 34, Tárcoles, Garabito, Puntarenas")
+                .imageUrl("https://images.unsplash.com/photo-1448375240586-882707db888b?w=800")
+                .latitude(9.7660).longitude(-84.5990).town(town).build());
+
+        placeRepository.save(Place.builder()
+                .name("Hotel Tangeri").description("Hotel clásico de Jacó frente al mar con piscina, restaurante propio y acceso directo a la playa. Favorito de surfistas y familias por su excelente ubicación en el centro de Jacó.")
+                .category(Place.Category.HOTEL).address("Av. Pastor Díaz, Jacó Centro, Puntarenas")
+                .imageUrl("https://images.unsplash.com/photo-1555854877-bab0e564b8d5?w=800")
+                .latitude(9.6155).longitude(-84.6275).town(town).build());
+
+        placeRepository.save(Place.builder()
+                .name("Escuela de Surf Jacó").description("La escuela de surf más recomendada de la costa central. Clases para principiantes y perfeccionamiento para intermedios. Instructores certificados, tablas de todos los tamaños y sesiones fotográficas incluidas.")
+                .category(Place.Category.CULTURAL).address("Playa Jacó Norte, Garabito, Puntarenas")
+                .imageUrl("https://images.unsplash.com/photo-1455264745730-cb3b76250ae8?w=800")
+                .latitude(9.6148).longitude(-84.6290).town(town).build());
+
+        log.info("Jacó sembrado: 5 lugares.");
+    }
+
+    private void seedConchal() {
+        if (townRepository.findBySlug("conchal").isPresent()) {
+            log.info("Conchal ya existe, se omite.");
+            return;
+        }
+        log.info("Sembrando Conchal...");
+
+        Town town = Town.builder()
+                .slug("conchal")
+                .name("Playa Conchal")
+                .description("Una playa única en el mundo, formada por millones de conchas trituradas que crean una arena blanca y suave. Aguas turquesas tranquilas, ideal para familias y buceo en el norte de Guanacaste.")
+                .province("Guanacaste")
+                .imageUrl("https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=800")
+                .build();
+        town = townRepository.save(town);
+
+        placeRepository.save(Place.builder()
+                .name("Playa Conchal").description("Una de las playas más hermosas de América Central. Su arena está compuesta completamente por millones de conchas trituradas de color blanco perlado. Aguas turquesas, tranquilas y cálidas, perfectas para snorkel y buceo.")
+                .category(Place.Category.PLAYA).address("Playa Conchal, Santa Cruz, Guanacaste")
+                .imageUrl("https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=800")
+                .latitude(10.3780).longitude(-85.7810).town(town).build());
+
+        placeRepository.save(Place.builder()
+                .name("The Westin Reserva Conchal").description("Resort de lujo de 2400 acres con acceso exclusivo a Playa Conchal. Cuatro piscinas, campo de golf de 18 hoyos, spa de clase mundial, 9 restaurantes y actividades de naturaleza para toda la familia.")
+                .category(Place.Category.HOTEL).address("Playa Conchal, Brasilito, Santa Cruz, Guanacaste")
+                .imageUrl("https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?w=800")
+                .latitude(10.3792).longitude(-85.7820).town(town).build());
+
+        placeRepository.save(Place.builder()
+                .name("Parque Nacional Marino Las Baulas").description("Área protegida para la anidación de la tortuga baula, la más grande del mundo. De octubre a febrero llegan cientos de tortugas a desovar por las noches. Tours nocturnos con guías certificados disponibles en temporada.")
+                .category(Place.Category.PARQUE).address("Playa Grande, Santa Cruz, Guanacaste")
+                .imageUrl("https://images.unsplash.com/photo-1437622368342-7a3d73a34c8f?w=800")
+                .latitude(10.3900).longitude(-85.7750).town(town).build());
+
+        placeRepository.save(Place.builder()
+                .name("Restaurante El Camaron Dorado").description("Marisquería familiar en Brasilito con más de 25 años de historia. Cangrejo en salsa criolla, langosta a la mantequilla y el mejor ceviche de Guanacaste. Mesas frente al mar, ambiente relajado.")
+                .category(Place.Category.RESTAURANTE).address("Frente al parque de Brasilito, Santa Cruz, Guanacaste")
+                .imageUrl("https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=800")
+                .latitude(10.3760).longitude(-85.7805).town(town).build());
+
+        placeRepository.save(Place.builder()
+                .name("Pueblo de Brasilito").description("Auténtico pueblo pesquero a 500 metros de Playa Conchal. Mercado local con artesanías de madera, cerámica guanacasteca y joyería de conchas. Los domingos hay feria de comidas típicas con chifrijo, tamales y agua dulce.")
+                .category(Place.Category.CULTURAL).address("Brasilito, Santa Cruz, Guanacaste")
+                .imageUrl("https://images.unsplash.com/photo-1555400038-63f5ba517a47?w=800")
+                .latitude(10.3750).longitude(-85.7800).town(town).build());
+
+        log.info("Conchal sembrado: 5 lugares.");
     }
 }
