@@ -54,4 +54,15 @@ export const placeService = {
   deletePlace: (id) =>
     api.delete(`/places/${id}`),
 }
+
+export const reviewService = {
+  getReviews: (placeId) =>
+    api.get(`/reviews/place/${placeId}`).then((r) => r.data),
+
+  createReview: (placeId, userId, reviewData) =>
+    api.post(
+      `/reviews/place/${placeId}/user/${userId}`,
+      reviewData
+    ).then((r) => r.data),
+}
 export default api

@@ -1,4 +1,4 @@
-export default function PlaceCard({ place, categoryInfo }) {
+export default function PlaceCard({ place, categoryInfo, onSelect, isSelected }) {
   const fallbackImg = `https://placehold.co/600x400/${
     (categoryInfo?.bg || '#2F7C91').replace('#', '')
   }/ffffff?text=${encodeURIComponent(place.name)}`
@@ -13,6 +13,7 @@ export default function PlaceCard({ place, categoryInfo }) {
         boxShadow: '0 4px 20px rgba(0,0,0,0.10)',
         transition: 'transform 0.25s ease, box-shadow 0.25s ease',
         cursor: 'default',
+        border: isSelected ? '2px solid #F7A640' : '2px solid transparent',
       }}
     >
       {/* Image */}
@@ -77,6 +78,26 @@ export default function PlaceCard({ place, categoryInfo }) {
             </span>
           </div>
         )}
+
+        <button
+          type="button"
+          onClick={onSelect}
+          style={{
+            marginTop: 10,
+            alignSelf: 'flex-start',
+            background: isSelected ? '#F7A640' : '#123C3A',
+            color: 'white',
+            border: 'none',
+            borderRadius: 10,
+            padding: '8px 13px',
+            fontSize: 13,
+            fontWeight: 700,
+            cursor: 'pointer',
+            transition: 'background 0.2s, transform 0.2s',
+          }}
+        >
+          {isSelected ? 'Cerrar reseñas' : 'Ver reseñas'}
+        </button>
       </div>
 
       {/* Bottom accent */}
