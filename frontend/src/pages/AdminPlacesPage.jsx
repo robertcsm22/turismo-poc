@@ -205,8 +205,12 @@ export default function AdminPlacesPage() {
   }
 
   useEffect(() => {
-    townService.getTown(townSlug).then(setTown).catch(console.error)
-    loadPlaces()
+    Promise.all([townService.getTown(townSlug), townService.getPlaces(townSlug)])
+      .then(([townData, placesData]) => {
+        setTown(townData)
+        setPlaces(placesData)
+      })
+      .catch(console.error)
   }, [townSlug])
 
   const loadPlaces = () => {
