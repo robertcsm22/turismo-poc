@@ -86,9 +86,9 @@ describe('AdminPlacesPage', () => {
     renderPage()
 
     await waitFor(() => {
-      expect(screen.getByText(/Gestiona los lugares turísticos de Santa Teresa/)).toBeInTheDocument()
+      expect(screen.getByText('2 lugares')).toBeInTheDocument()
     })
-    expect(screen.getByText('2 lugares')).toBeInTheDocument()
+    expect(screen.getByText(/Gestiona los lugares turísticos de Santa Teresa/)).toBeInTheDocument()
   })
 
   it('shows the empty state when there are no places', async () => {
