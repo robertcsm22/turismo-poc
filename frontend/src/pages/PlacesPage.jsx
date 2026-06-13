@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from 'react'
+import { useEffect, useMemo, useState, useRef } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useParams, useNavigate, useSearchParams } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
@@ -376,7 +376,6 @@ export default function PlacesPage() {
 
   const [town, setTown] = useState(null)
   const [places, setPlaces] = useState([])
-  const [filteredPlaces, setFilteredPlaces] = useState([])
   const [loading, setLoading] = useState(true)
   const [showMap, setShowMap] = useState(false)
   const [showQR, setShowQR] = useState(false)
@@ -419,13 +418,12 @@ export default function PlacesPage() {
       .then(([townData, placesData]) => {
         setTown(townData)
         setPlaces(placesData)
-        setFilteredPlaces(placesData)
       })
       .catch(() => navigate('/error'))
       .finally(() => setLoading(false))
   }, [townSlug, navigate])
 
-  useEffect(() => {
+  const filteredPlaces = useMemo(() => {
     let result = [...places]
     if (selectedCategory !== 'ALL') result = result.filter(p => p.category === selectedCategory)
     if (searchTerm.trim()) {
@@ -440,7 +438,7 @@ export default function PlacesPage() {
       if (sortBy === 'createdAt') return new Date(b.createdAt || 0) - new Date(a.createdAt || 0)
       return a.name.localeCompare(b.name)
     })
-    setFilteredPlaces(result)
+    return result
   }, [selectedCategory, searchTerm, sortBy, places])
 
   useEffect(() => {
