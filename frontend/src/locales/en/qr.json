@@ -1,0 +1,7 @@
+{
+  "defaultTownName": "Local Tourism",
+  "defaultTownFallback": "this town",
+  "province": "{{province}}, Costa Rica",
+  "scanInstructions": "Scan to access the tourist spots of",
+  "downloadButton": "⬇️ Download PNG"
+}

@@ -1,0 +1,49 @@
+{
+  "coordPicker": {
+    "instructions": "Haz clic en el mapa para colocar el marcador, o arrástralo para ajustarlo.",
+    "latitude": "Latitud",
+    "longitude": "Longitud"
+  },
+  "messages": {
+    "townLoadError": "Error: no se pudo cargar el municipio",
+    "placeUpdated": "Lugar actualizado correctamente",
+    "placeCreated": "Lugar creado correctamente",
+    "noPermission": "Sin permisos para realizar esta acción",
+    "invalidData": "Datos inválidos, revisa el formulario",
+    "saveError": "Error al guardar el lugar",
+    "placeDeleted": "Lugar eliminado",
+    "deleteError": "Error al eliminar el lugar"
+  },
+  "header": {
+    "title": "Panel de Administración",
+    "subtitle": "Gestiona los lugares turísticos de {{town}}"
+  },
+  "placesCount_one": "{{count}} lugar",
+  "placesCount_other": "{{count}} lugares",
+  "form": {
+    "editTitle": "✏️  Editar Lugar",
+    "newTitle": "➕  Nuevo Lugar",
+    "editingId": "Modificando ID #{{id}}",
+    "nameLabel": "Nombre del lugar",
+    "namePlaceholder": "Ej. Playa Bonita",
+    "descriptionLabel": "Descripción",
+    "descriptionPlaceholder": "Breve descripción del lugar...",
+    "categoryLabel": "Categoría",
+    "addressLabel": "Dirección",
+    "addressPlaceholder": "Ej. Calle Principal, #10",
+    "imageUrlLabel": "URL de imagen",
+    "imageUrlPlaceholder": "https://...",
+    "imagePreviewAlt": "vista previa",
+    "locationLabel": "Ubicación en el mapa",
+    "saveChanges": "Guardar cambios",
+    "createPlace": "Crear lugar"
+  },
+  "empty": {
+    "title": "Sin lugares aún",
+    "body": "Agrega el primer lugar turístico usando el formulario."
+  },
+  "card": {
+    "editButton": "✏️ Editar",
+    "deleteButton": "🗑️ Eliminar"
+  }
+}

@@ -1,0 +1,23 @@
+{
+  "welcome": "Hi! 👋 I'm your virtual tourism guide. Ask me about places, activities, restaurants, or anything you want to know about the town. 🌴",
+  "fab": {
+    "title": "Tourism assistant"
+  },
+  "header": {
+    "title": "Guide to {{town}}",
+    "defaultTown": "Tourism",
+    "subtitle": "Virtual assistant · Online",
+    "clearTitle": "Clear chat"
+  },
+  "suggestions": {
+    "label": "SUGGESTIONS",
+    "questions": {
+      "today": "What can I do today?",
+      "eat": "Where can I eat?",
+      "beaches": "What are the best beaches?"
+    }
+  },
+  "input": {
+    "placeholder": "Type your question..."
+  }
+}

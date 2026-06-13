@@ -1,0 +1,5 @@
+{
+  "title": "Destination not found",
+  "description": "The QR code may be invalid, the town doesn't exist in our database, or the link has expired.",
+  "goHome": "Go to home"
+}

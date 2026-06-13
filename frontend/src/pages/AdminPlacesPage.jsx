@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import { useAuth } from '../context/AuthContext'
 import { placeService, townService } from '../services/api'
 import Navbar from '../components/Navbar'
@@ -22,6 +23,7 @@ const EMPTY_FORM = { name: '', description: '', category: 'PARQUE', address: '',
 const DEFAULT_CENTER = [9.6466, -85.1700]
 
 function CoordPicker({ latitude, longitude, onChange }) {
+  const { t } = useTranslation('admin')
   const mapRef = useRef(null)
   const mapInstanceRef = useRef(null)
   const markerRef = useRef(null)
@@ -121,11 +123,11 @@ function CoordPicker({ latitude, longitude, onChange }) {
         style={{ height: 180, borderRadius: 10, overflow: 'hidden', border: '1.5px solid #d1d5db', cursor: 'crosshair' }}
       />
       <p style={{ margin: '6px 0 0', fontSize: 11, color: '#9ca3af' }}>
-        Haz clic en el mapa para colocar el marcador, o arrástralo para ajustarlo.
+        {t('coordPicker.instructions')}
       </p>
       <div style={{ display: 'flex', gap: 8, marginTop: 8 }}>
         <div style={{ flex: 1 }}>
-          <label style={{ display: 'block', fontSize: 11, fontWeight: 600, color: '#374151', marginBottom: 3 }}>Latitud</label>
+          <label style={{ display: 'block', fontSize: 11, fontWeight: 600, color: '#374151', marginBottom: 3 }}>{t('coordPicker.latitude')}</label>
           <input
             type="number" step="any" placeholder="9.6466"
             value={latitude}
@@ -134,7 +136,7 @@ function CoordPicker({ latitude, longitude, onChange }) {
           />
         </div>
         <div style={{ flex: 1 }}>
-          <label style={{ display: 'block', fontSize: 11, fontWeight: 600, color: '#374151', marginBottom: 3 }}>Longitud</label>
+          <label style={{ display: 'block', fontSize: 11, fontWeight: 600, color: '#374151', marginBottom: 3 }}>{t('coordPicker.longitude')}</label>
           <input
             type="number" step="any" placeholder="-85.1700"
             value={longitude}
@@ -168,6 +170,7 @@ function Toast({ toast }) {
 }
 
 function CategoryBadge({ category }) {
+  const { t: tp } = useTranslation('places')
   const cfg = CATEGORIES[category] || CATEGORIES.OTRO
   return (
     <span style={{
@@ -177,12 +180,14 @@ function CategoryBadge({ category }) {
       fontSize: 12, fontWeight: 600,
       border: `1px solid ${cfg.bg}33`,
     }}>
-      {cfg.icon} {cfg.label}
+      {cfg.icon} {tp(`categories.${category}`, cfg.label)}
     </span>
   )
 }
 
 export default function AdminPlacesPage() {
+  const { t } = useTranslation(['admin', 'common'])
+  const { t: tp } = useTranslation('places')
   const navigate = useNavigate()
   const { user } = useAuth()
   const { townSlug = 'santa-teresa' } = useParams()
@@ -213,7 +218,7 @@ export default function AdminPlacesPage() {
   const handleSubmit = async (e) => {
     e.preventDefault()
     if (!town?.id) {
-      showToast('Error: no se pudo cargar el municipio', 'error')
+      showToast(t('messages.townLoadError'), 'error')
       return
     }
     try {
@@ -224,10 +229,10 @@ export default function AdminPlacesPage() {
       }
       if (editingId) {
         await placeService.updatePlace(editingId, payload)
-        showToast('Lugar actualizado correctamente')
+        showToast(t('messages.placeUpdated'))
       } else {
         await placeService.createPlace(town.id, payload)
-        showToast('Lugar creado correctamente')
+        showToast(t('messages.placeCreated'))
       }
       setEditingId(null)
       setFormData(EMPTY_FORM)
@@ -236,11 +241,11 @@ export default function AdminPlacesPage() {
       console.error('Error al guardar lugar:', err?.response?.data ?? err)
       const status = err?.response?.status
       if (status === 401 || status === 403) {
-        showToast('Sin permisos para realizar esta acción', 'error')
+        showToast(t('messages.noPermission'), 'error')
       } else if (status === 400) {
-        showToast('Datos inválidos, revisa el formulario', 'error')
+        showToast(t('messages.invalidData'), 'error')
       } else {
-        showToast('Error al guardar el lugar', 'error')
+        showToast(t('messages.saveError'), 'error')
       }
     }
   }
@@ -249,10 +254,10 @@ export default function AdminPlacesPage() {
     setDeletingId(id)
     try {
       await placeService.deletePlace(id)
-      showToast('Lugar eliminado')
+      showToast(t('messages.placeDeleted'))
       loadPlaces()
     } catch {
-      showToast('Error al eliminar el lugar', 'error')
+      showToast(t('messages.deleteError'), 'error')
     } finally {
       setDeletingId(null)
     }
@@ -322,14 +327,14 @@ export default function AdminPlacesPage() {
                 backdropFilter: 'blur(4px)',
               }}
             >
-              ← Volver
+              ← {t('buttons.back', { ns: 'common' })}
             </button>
             <div>
               <h1 style={{ margin: 0, fontSize: 28, fontWeight: 700, letterSpacing: -0.5 }}>
-                Panel de Administración
+                {t('header.title')}
               </h1>
               <p style={{ margin: '4px 0 0', opacity: 0.75, fontSize: 14 }}>
-                Gestiona los lugares turísticos de {town?.name || 'Santa Teresa'}
+                {t('header.subtitle', { town: town?.name || 'Santa Teresa' })}
               </p>
             </div>
             <div style={{ marginLeft: 'auto' }}>
@@ -338,7 +343,7 @@ export default function AdminPlacesPage() {
                 borderRadius: 20, fontSize: 14, fontWeight: 600,
                 border: '1px solid rgba(255,255,255,0.3)',
               }}>
-                {places.length} lugar{places.length !== 1 ? 'es' : ''}
+                {t('placesCount', { count: places.length })}
               </span>
             </div>
           </div>
@@ -360,52 +365,52 @@ export default function AdminPlacesPage() {
                 padding: '20px 24px', color: 'white',
               }}>
                 <h5 style={{ margin: 0, fontSize: 17, fontWeight: 700 }}>
-                  {editingId ? '✏️  Editar Lugar' : '➕  Nuevo Lugar'}
+                  {editingId ? t('form.editTitle') : t('form.newTitle')}
                 </h5>
                 {editingId && (
                   <p style={{ margin: '4px 0 0', opacity: 0.8, fontSize: 13 }}>
-                    Modificando ID #{editingId}
+                    {t('form.editingId', { id: editingId })}
                   </p>
                 )}
               </div>
 
               <form onSubmit={handleSubmit} style={{ padding: 24, display: 'flex', flexDirection: 'column', gap: 16 }}>
                 <div>
-                  <label style={labelStyle}>Nombre del lugar</label>
+                  <label style={labelStyle}>{t('form.nameLabel')}</label>
                   <input className="admin-input" style={inputStyle} type="text" name="name"
-                    placeholder="Ej. Playa Bonita" value={formData.name} onChange={handleChange} required />
+                    placeholder={t('form.namePlaceholder')} value={formData.name} onChange={handleChange} required />
                 </div>
 
                 <div>
-                  <label style={labelStyle}>Descripción</label>
+                  <label style={labelStyle}>{t('form.descriptionLabel')}</label>
                   <textarea className="admin-input" style={{ ...inputStyle, minHeight: 90, resize: 'vertical' }}
-                    name="description" placeholder="Breve descripción del lugar..."
+                    name="description" placeholder={t('form.descriptionPlaceholder')}
                     value={formData.description} onChange={handleChange} />
                 </div>
 
                 <div>
-                  <label style={labelStyle}>Categoría</label>
+                  <label style={labelStyle}>{t('form.categoryLabel')}</label>
                   <select className="admin-input" style={{ ...inputStyle, cursor: 'pointer' }}
                     name="category" value={formData.category} onChange={handleChange}>
                     {Object.entries(CATEGORIES).map(([val, cfg]) => (
-                      <option key={val} value={val}>{cfg.icon} {cfg.label}</option>
+                      <option key={val} value={val}>{cfg.icon} {tp(`categories.${val}`, cfg.label)}</option>
                     ))}
                   </select>
                 </div>
 
                 <div>
-                  <label style={labelStyle}>Dirección</label>
+                  <label style={labelStyle}>{t('form.addressLabel')}</label>
                   <input className="admin-input" style={inputStyle} type="text" name="address"
-                    placeholder="Ej. Calle Principal, #10" value={formData.address} onChange={handleChange} />
+                    placeholder={t('form.addressPlaceholder')} value={formData.address} onChange={handleChange} />
                 </div>
 
                 <div>
-                  <label style={labelStyle}>URL de imagen</label>
+                  <label style={labelStyle}>{t('form.imageUrlLabel')}</label>
                   <input className="admin-input" style={inputStyle} type="text" name="imageUrl"
-                    placeholder="https://..." value={formData.imageUrl} onChange={handleChange} />
+                    placeholder={t('form.imageUrlPlaceholder')} value={formData.imageUrl} onChange={handleChange} />
                   {formData.imageUrl && (
                     <div style={{ marginTop: 10, borderRadius: 10, overflow: 'hidden', height: 120 }}>
-                      <img src={formData.imageUrl} alt="preview"
+                      <img src={formData.imageUrl} alt={t('form.imagePreviewAlt')}
                         style={{ width: '100%', height: '100%', objectFit: 'cover' }}
                         onError={(e) => { e.target.style.display = 'none' }} />
                     </div>
@@ -413,7 +418,7 @@ export default function AdminPlacesPage() {
                 </div>
 
                 <div>
-                  <label style={labelStyle}>Ubicación en el mapa</label>
+                  <label style={labelStyle}>{t('form.locationLabel')}</label>
                   <CoordPicker
                     latitude={formData.latitude}
                     longitude={formData.longitude}
@@ -430,7 +435,7 @@ export default function AdminPlacesPage() {
                     cursor: !town ? 'not-allowed' : 'pointer',
                     transition: 'background 0.2s',
                   }}>
-                    {editingId ? 'Guardar cambios' : 'Crear lugar'}
+                    {editingId ? t('form.saveChanges') : t('form.createPlace')}
                   </button>
                   {editingId && (
                     <button type="button" onClick={handleCancel} style={{
@@ -438,7 +443,7 @@ export default function AdminPlacesPage() {
                       color: '#64748b', border: 'none', borderRadius: 10,
                       fontWeight: 600, fontSize: 14, cursor: 'pointer',
                     }}>
-                      Cancelar
+                      {t('buttons.cancel', { ns: 'common' })}
                     </button>
                   )}
                 </div>
@@ -453,9 +458,9 @@ export default function AdminPlacesPage() {
                 textAlign: 'center', boxShadow: '0 4px 24px rgba(0,0,0,0.08)',
               }}>
                 <div style={{ fontSize: 56, marginBottom: 16 }}>📍</div>
-                <h4 style={{ color: '#374151', fontWeight: 700 }}>Sin lugares aún</h4>
+                <h4 style={{ color: '#374151', fontWeight: 700 }}>{t('empty.title')}</h4>
                 <p style={{ color: '#9ca3af', fontSize: 15 }}>
-                  Agrega el primer lugar turístico usando el formulario.
+                  {t('empty.body')}
                 </p>
               </div>
             ) : (
@@ -516,7 +521,7 @@ export default function AdminPlacesPage() {
                             border: '1.5px solid #fcd34d', fontSize: 13,
                             fontWeight: 600, cursor: 'pointer', transition: 'background 0.2s',
                           }}>
-                            ✏️ Editar
+                            {t('card.editButton')}
                           </button>
                           <button className="btn-delete" onClick={() => handleDelete(place.id)}
                             disabled={deletingId === place.id} style={{
@@ -526,7 +531,7 @@ export default function AdminPlacesPage() {
                               fontWeight: 600, cursor: deletingId === place.id ? 'not-allowed' : 'pointer',
                               transition: 'background 0.2s',
                             }}>
-                            {deletingId === place.id ? '...' : '🗑️ Eliminar'}
+                            {deletingId === place.id ? t('loading', { ns: 'common' }) : t('card.deleteButton')}
                           </button>
                         </div>
                       </div>

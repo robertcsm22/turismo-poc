@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import { useAuth } from '../context/AuthContext'
 import logo from '../assets/Logo de Santa Tereza.png'
 import TravelTransition from '../components/TravelTransition'
@@ -24,13 +25,14 @@ const HERO_IMAGES = [
 ]
 
 function HeroCarousel() {
+  const { t } = useTranslation('destinations')
   const [index, setIndex] = useState(0)
 
   useEffect(() => {
-    const t = setInterval(() => {
+    const timer = setInterval(() => {
       setIndex(i => (i + 1) % HERO_IMAGES.length)
     }, 5000)
-    return () => clearInterval(t)
+    return () => clearInterval(timer)
   }, [])
 
   return (
@@ -64,17 +66,13 @@ function HeroCarousel() {
       }}>
         <div style={{ fontSize: 56 }}>🌴</div>
         <h1 className="fw-bold text-white mt-3" style={{ fontSize: '2.4rem', letterSpacing: '-0.5px', textShadow: '0 2px 18px rgba(0,0,0,0.5)' }}>
-          Sistema Local de Turismo de Costa Rica
+          {t('hero.title')}
         </h1>
         <p className="text-white-50 mt-3" style={{ fontSize: '1.05rem', maxWidth: 720, margin: '8px auto 0', lineHeight: 1.7 }}>
-          Una plataforma pensada para acercarte lo mejor del Pacífico costarricense: desde las olas
-          legendarias de Santa Teresa, Tamarindo y Jacó, hasta la naturaleza exuberante de Manuel
-          Antonio y las aguas turquesas de Playa Conchal. Descubrí playas, restaurantes, hoteles,
-          miradores y actividades recomendadas por la comunidad local, todo organizado por destino
-          para que planifiques tu próxima aventura sin complicaciones.
+          {t('hero.description')}
         </p>
         <p className="text-white-50 mt-2" style={{ fontSize: '0.9rem', maxWidth: 600, opacity: 0.8 }}>
-          Seleccioná uno de los destinos a continuación para comenzar a explorar 👇
+          {t('hero.cta')}
         </p>
       </div>
     </div>
@@ -125,6 +123,7 @@ const DESTINATIONS = [
 ]
 
 export default function DestinationsPage() {
+  const { t } = useTranslation('destinations')
   const navigate = useNavigate()
   const { user, logout } = useAuth()
   const [traveling, setTraveling] = useState(null)
@@ -155,7 +154,7 @@ export default function DestinationsPage() {
       }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
           <img src={logo} alt="Logo" style={{ height: 38, width: 'auto' }} />
-          <span style={{ color: 'white', fontWeight: 700, fontSize: 15 }}>Turismo Local</span>
+          <span style={{ color: 'white', fontWeight: 700, fontSize: 15 }}>{t('navbar.brand')}</span>
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
           {user?.pictureUrl && (
@@ -176,7 +175,7 @@ export default function DestinationsPage() {
               onMouseEnter={e => { e.currentTarget.style.background = 'rgba(247,166,64,0.28)' }}
               onMouseLeave={e => { e.currentTarget.style.background = 'rgba(247,166,64,0.15)' }}
             >
-              📊 Dashboard
+              {t('navbar.dashboard')}
             </button>
           )}
           <button onClick={handleLogout} style={{
@@ -188,7 +187,7 @@ export default function DestinationsPage() {
             onMouseEnter={e => { e.currentTarget.style.borderColor = '#F7A640'; e.currentTarget.style.color = '#F7A640' }}
             onMouseLeave={e => { e.currentTarget.style.borderColor = 'rgba(255,255,255,0.3)'; e.currentTarget.style.color = 'rgba(255,255,255,0.8)' }}
           >
-            Salir
+            {t('navbar.logout')}
           </button>
         </div>
       </nav>
@@ -250,7 +249,7 @@ export default function DestinationsPage() {
                     className="btn btn-sm w-100 mt-2 fw-semibold text-white"
                     style={{ background: dest.gradient, border: 'none', borderRadius: 10 }}
                   >
-                    Explorar destino →
+                    {t('card.explore')}
                   </button>
                 </div>
               </div>

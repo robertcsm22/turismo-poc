@@ -1,0 +1,15 @@
+{
+  "navbar": {
+    "brand": "Turismo Local",
+    "dashboard": "📊 Dashboard",
+    "logout": "Salir"
+  },
+  "hero": {
+    "title": "Sistema Local de Turismo de Costa Rica",
+    "description": "Una plataforma pensada para acercarte lo mejor del Pacífico costarricense: desde las olas legendarias de Santa Teresa, Tamarindo y Jacó, hasta la naturaleza exuberante de Manuel Antonio y las aguas turquesas de Playa Conchal. Descubrí playas, restaurantes, hoteles, miradores y actividades recomendadas por la comunidad local, todo organizado por destino para que planifiques tu próxima aventura sin complicaciones.",
+    "cta": "Seleccioná uno de los destinos a continuación para comenzar a explorar 👇"
+  },
+  "card": {
+    "explore": "Explorar destino →"
+  }
+}

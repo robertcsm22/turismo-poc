@@ -83,4 +83,43 @@ class TownServiceTest {
         assertThat(places.get(0).getName()).isEqualTo("Playa Santa Teresa");
         assertThat(places.get(0).getCategory()).isEqualTo("PLAYA");
     }
+
+    @Test
+    void getTownById_returnsCorrectTown() {
+        when(townRepository.findById(1L)).thenReturn(Optional.of(sampleTown));
+
+        var result = townService.getTownById(1L);
+
+        assertThat(result).isNotNull();
+        assertThat(result.getName()).isEqualTo("Santa Teresa");
+        assertThat(result.getSlug()).isEqualTo("santa-teresa");
+    }
+
+    @Test
+    void getTownById_throwsWhenNotFound() {
+        when(townRepository.findById(99L)).thenReturn(Optional.empty());
+
+        assertThatThrownBy(() -> townService.getTownById(99L))
+                .isInstanceOf(RuntimeException.class)
+                .hasMessageContaining("Pueblo no encontrado");
+    }
+
+    @Test
+    void getPlacesByTownId_returnsPlacesList() {
+        Place place = Place.builder()
+                .id(2L)
+                .name("Mirador Pico Tigre")
+                .category(Place.Category.MIRADOR)
+                .town(sampleTown)
+                .build();
+
+        when(placeRepository.findByTownIdAndActiveTrue(1L))
+                .thenReturn(List.of(place));
+
+        var places = townService.getPlacesByTownId(1L);
+
+        assertThat(places).hasSize(1);
+        assertThat(places.get(0).getName()).isEqualTo("Mirador Pico Tigre");
+        assertThat(places.get(0).getCategory()).isEqualTo("MIRADOR");
+    }
 }

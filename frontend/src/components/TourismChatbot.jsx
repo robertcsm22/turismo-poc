@@ -1,8 +1,9 @@
 import { useState, useRef, useEffect } from 'react'
-
-const WELCOME = '¡Hola! 👋 Soy tu guía virtual de turismo. Pregúntame sobre los lugares, actividades, restaurantes o lo que quieras saber del pueblo. 🌴'
+import { useTranslation } from 'react-i18next'
 
 export default function TourismChatbot({ town, places }) {
+  const { t } = useTranslation('chatbot')
+  const WELCOME = t('welcome', '¡Hola! 👋 Soy tu guía virtual de turismo. Pregúntame sobre los lugares, actividades, restaurantes o lo que quieras saber del pueblo. 🌴')
   const [open, setOpen] = useState(false)
   const [messages, setMessages] = useState([
     { role: 'assistant', content: WELCOME }
@@ -96,9 +97,9 @@ export default function TourismChatbot({ town, places }) {
   }
 
   const quickQuestions = [
-    '¿Qué puedo hacer hoy?',
-    '¿Dónde comer?',
-    '¿Cuáles son las mejores playas?',
+    t('suggestions.questions.today', '¿Qué puedo hacer hoy?'),
+    t('suggestions.questions.eat', '¿Dónde comer?'),
+    t('suggestions.questions.beaches', '¿Cuáles son las mejores playas?'),
   ]
 
   return (
@@ -131,7 +132,7 @@ export default function TourismChatbot({ town, places }) {
           display: 'flex', alignItems: 'center', justifyContent: 'center',
           transition: 'transform 0.2s, box-shadow 0.2s',
         }}
-        title="Asistente de turismo"
+        title={t('fab.title', 'Asistente de turismo')}
       >
         {open ? '✕' : '💬'}
       </button>
@@ -161,10 +162,10 @@ export default function TourismChatbot({ town, places }) {
             }}>🌴</div>
             <div>
               <p style={{ color: 'white', fontWeight: 700, margin: 0, fontSize: 14 }}>
-                Guía de {town?.name || 'Turismo'}
+                {t('header.title', 'Guía de {{town}}', { town: town?.name || t('header.defaultTown', 'Turismo') })}
               </p>
               <p style={{ color: 'rgba(255,255,255,0.65)', margin: 0, fontSize: 11 }}>
-                Asistente virtual · En línea
+                {t('header.subtitle', 'Asistente virtual · En línea')}
               </p>
             </div>
             <button
@@ -174,7 +175,7 @@ export default function TourismChatbot({ town, places }) {
                 color: 'rgba(255,255,255,0.7)', borderRadius: 6, padding: '3px 8px',
                 fontSize: 11, cursor: 'pointer',
               }}
-              title="Limpiar chat"
+              title={t('header.clearTitle', 'Limpiar chat')}
             >
               🗑️
             </button>
@@ -229,7 +230,7 @@ export default function TourismChatbot({ town, places }) {
 
             {messages.length === 1 && !loading && (
               <div style={{ display: 'flex', flexDirection: 'column', gap: 6, marginTop: 4 }}>
-                <p style={{ fontSize: 11, color: '#94a3b8', margin: 0, fontWeight: 600 }}>SUGERENCIAS</p>
+                <p style={{ fontSize: 11, color: '#94a3b8', margin: 0, fontWeight: 600 }}>{t('suggestions.label', 'SUGERENCIAS')}</p>
                 {quickQuestions.map((q, i) => (
                   <button key={i} className="cb-quick"
                     onClick={() => { setInput(q); inputRef.current?.focus() }}
@@ -260,7 +261,7 @@ export default function TourismChatbot({ town, places }) {
               value={input}
               onChange={e => setInput(e.target.value)}
               onKeyDown={handleKey}
-              placeholder="Escribe tu pregunta..."
+              placeholder={t('input.placeholder', 'Escribe tu pregunta...')}
               rows={1}
               style={{
                 flex: 1, border: '1.5px solid #e2e8f0', borderRadius: 10,

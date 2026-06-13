@@ -5,6 +5,9 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.CreationTimestamp;
+
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "places")
@@ -42,6 +45,10 @@ public class Place {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "town_id", nullable = false)
     private Town town;
+
+    @CreationTimestamp
+    @Column(updatable = false)
+    private LocalDateTime createdAt;
 
     public enum Category {
         RESTAURANTE, PARQUE, MUSEO, MIRADOR, HOTEL, PLAYA, CULTURAL, GASTRONOMIA, OTRO

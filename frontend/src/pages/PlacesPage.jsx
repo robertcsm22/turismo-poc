@@ -1,5 +1,6 @@
 import { useEffect, useState, useRef } from 'react'
-import { useParams, useNavigate } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
+import { useParams, useNavigate, useSearchParams } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import { townService } from '../services/api'
 import PlaceCard from '../components/PlaceCard'
@@ -21,6 +22,7 @@ export const CATEGORY_CONFIG = {
 
 // ─── Map Modal ────────────────────────────────────────────────────────────────
 function MapModal({ places, town, onClose }) {
+  const { t } = useTranslation('places')
   const mapRef = useRef(null)
   const mapInstanceRef = useRef(null)
 
@@ -45,6 +47,7 @@ function MapModal({ places, town, onClose }) {
 
     validPlaces.forEach(place => {
       const cfg = CATEGORY_CONFIG[place.category] || CATEGORY_CONFIG.OTRO
+      const catLabel = t(`categories.${place.category}`, cfg.label)
       const icon = L.divIcon({
         className: '',
         html: `<div style="width:40px;height:40px;border-radius:50% 50% 50% 0;transform:rotate(-45deg);background:${cfg.bg};display:flex;align-items:center;justify-content:center;box-shadow:0 3px 10px rgba(0,0,0,0.35);border:2px solid white;"><span style="transform:rotate(45deg);font-size:16px;line-height:1;">${cfg.emoji}</span></div>`,
@@ -59,7 +62,7 @@ function MapModal({ places, town, onClose }) {
           <div style="min-width:190px;font-family:inherit;">
             ${place.imageUrl ? `<img src="${place.imageUrl}" style="width:100%;height:90px;object-fit:cover;border-radius:6px;margin-bottom:8px;"/>` : ''}
             <div style="margin-bottom:5px;">
-              <span style="background:${cfg.bg};color:white;padding:2px 8px;border-radius:10px;font-size:11px;font-weight:600;">${cfg.emoji} ${cfg.label}</span>
+              <span style="background:${cfg.bg};color:white;padding:2px 8px;border-radius:10px;font-size:11px;font-weight:600;">${cfg.emoji} ${catLabel}</span>
             </div>
             <strong style="font-size:14px;display:block;margin-bottom:3px;">${place.name}</strong>
             ${place.description ? `<p style="font-size:12px;color:#555;margin:0 0 4px;line-height:1.4;">${place.description.slice(0, 80)}${place.description.length > 80 ? '…' : ''}</p>` : ''}
@@ -108,19 +111,19 @@ function MapModal({ places, town, onClose }) {
           <div style={{ display:'flex',alignItems:'center',gap:10 }}>
             <span style={{ fontSize:22 }}>🗺️</span>
             <div>
-              <p style={{ color:'white',fontWeight:700,margin:0,fontSize:16 }}>Mapa de {town?.name}</p>
-              <p style={{ color:'rgba(255,255,255,0.65)',margin:0,fontSize:12 }}>{places.filter(p => p.latitude && p.longitude).length} lugares con ubicación</p>
+              <p style={{ color:'white',fontWeight:700,margin:0,fontSize:16 }}>{t('mapModal.title', { town: town?.name })}</p>
+              <p style={{ color:'rgba(255,255,255,0.65)',margin:0,fontSize:12 }}>{t('mapModal.withLocation', { count: places.filter(p => p.latitude && p.longitude).length })}</p>
             </div>
           </div>
           <button onClick={onClose} style={{ background:'rgba(255,255,255,0.15)',border:'none',color:'white',width:34,height:34,borderRadius:8,cursor:'pointer',fontSize:20,display:'flex',alignItems:'center',justifyContent:'center' }}>×</button>
         </div>
         <div style={{ padding:'8px 16px',background:'#f8fafc',borderBottom:'1px solid #e2e8f0',display:'flex',gap:8,flexWrap:'wrap',alignItems:'center',flexShrink:0 }}>
-          <span style={{ fontSize:11,color:'#94a3b8',fontWeight:600,marginRight:2 }}>CATEGORÍAS:</span>
+          <span style={{ fontSize:11,color:'#94a3b8',fontWeight:600,marginRight:2 }}>{t('mapModal.categoriesLabel')}</span>
           {usedCategories.map(cat => {
             const cfg = CATEGORY_CONFIG[cat] || CATEGORY_CONFIG.OTRO
             return (
               <span key={cat} style={{ background:cfg.light,color:cfg.bg,padding:'3px 10px',borderRadius:12,fontSize:12,fontWeight:600 }}>
-                {cfg.emoji} {cfg.label}
+                {cfg.emoji} {t(`categories.${cat}`, cfg.label)}
               </span>
             )
           })}
@@ -133,6 +136,7 @@ function MapModal({ places, town, onClose }) {
 
 // ─── QR Modal ─────────────────────────────────────────────────────────────────
 function QRModal({ townSlug, town, onClose }) {
+  const { t } = useTranslation(['places', 'common'])
   const qrRef = useRef(null)
   const [qrReady, setQrReady] = useState(false)
 
@@ -199,7 +203,7 @@ function QRModal({ townSlug, town, onClose }) {
       `}</style>
       <div style={{ background:'white',borderRadius:20,padding:'36px 32px',textAlign:'center',maxWidth:360,width:'100%',boxShadow:'0 24px 64px rgba(0,0,0,0.4)' }}>
         <div style={{ fontSize:36,marginBottom:8 }}>📲</div>
-        <h2 style={{ color:'#123C3A',fontWeight:800,margin:'0 0 4px',fontSize:20 }}>Código QR</h2>
+        <h2 style={{ color:'#123C3A',fontWeight:800,margin:'0 0 4px',fontSize:20 }}>{t('qrModal.title', { ns: 'places' })}</h2>
         <p style={{ color:'#64748b',fontSize:13,margin:'0 0 24px' }}>{town?.name || townSlug} · {town?.province || 'Costa Rica'}</p>
 
         {/* QR con efecto scan */}
@@ -215,17 +219,17 @@ function QRModal({ townSlug, town, onClose }) {
         </div>
 
         <p style={{ color:'#94a3b8',fontSize:11,margin:'0 0 20px',lineHeight:1.5 }}>
-          Escanear redirige a<br />
+          {t('qrModal.scanRedirect', { ns: 'places' })}<br />
           <span style={{ color:'#123C3A',fontWeight:600,fontSize:12 }}>{window.location.origin}/login/{townSlug}</span>
         </p>
         <div style={{ display:'flex',gap:10,justifyContent:'center',flexWrap:'wrap' }}>
           <button onClick={handleDownload} disabled={!qrReady}
             style={{ background:'#123C3A',color:'white',border:'none',padding:'10px 20px',borderRadius:10,fontWeight:600,fontSize:13,cursor:qrReady?'pointer':'not-allowed',opacity:qrReady?1:0.5 }}>
-            ⬇️ Descargar PNG
+            {t('qrModal.download', { ns: 'places' })}
           </button>
           <button onClick={onClose}
             style={{ background:'transparent',color:'#64748b',border:'2px solid #e2e8f0',padding:'10px 20px',borderRadius:10,fontWeight:600,fontSize:13,cursor:'pointer' }}>
-            Cerrar
+            {t('buttons.close', { ns: 'common' })}
           </button>
         </div>
       </div>
@@ -243,6 +247,7 @@ const BIRD_DATA = [
 ]
 
 function SunsetHero({ town, searchTerm, setSearchTerm, places, onShowMap, onShowQR }) {
+  const { t } = useTranslation('places')
   const birdsRef = useRef(null)
 
   useEffect(() => {
@@ -308,7 +313,7 @@ function SunsetHero({ town, searchTerm, setSearchTerm, places, onShowMap, onShow
             display:'inline-block',background:'rgba(247,166,64,0.25)',color:'#F7A640',
             padding:'3px 12px',borderRadius:20,fontSize:12,fontWeight:600,marginBottom:8,
             border:'1px solid rgba(247,166,64,0.4)',
-          }}>🗺️ Turismo Local</span>
+          }}>{t('badge')}</span>
 
           <h1 style={{ color:'white',fontSize:36,fontWeight:800,margin:'0 0 6px',textShadow:'0 2px 16px rgba(0,0,0,0.5)',lineHeight:1.1 }}>
             {town?.name}
@@ -326,13 +331,13 @@ function SunsetHero({ town, searchTerm, setSearchTerm, places, onShowMap, onShow
                 border:'1.5px solid rgba(255,255,255,0.35)',padding:'9px 18px',borderRadius:10,
                 fontWeight:600,fontSize:13,cursor:'pointer',backdropFilter:'blur(4px)',
                 fontFamily:'inherit',transition:'background 0.2s' }}>
-              🗺️ Ver mapa
+              {t('showMap')}
             </button>
             <button className="sh-btn-qr" onClick={onShowQR}
               style={{ display:'flex',alignItems:'center',gap:7,background:'#F7A640',color:'white',
                 border:'none',padding:'9px 18px',borderRadius:10,fontWeight:600,
                 fontSize:13,cursor:'pointer',fontFamily:'inherit',transition:'opacity 0.2s' }}>
-              📲 Código QR
+              {t('showQR')}
             </button>
           </div>
         </div>
@@ -341,15 +346,15 @@ function SunsetHero({ town, searchTerm, setSearchTerm, places, onShowMap, onShow
       <div style={{ background:'rgba(13,43,42,0.95)',backdropFilter:'blur(8px)',padding:'12px 5%',display:'flex',alignItems:'center',gap:24,flexWrap:'wrap' }}>
         <div style={{ position:'relative',flex:'1',minWidth:200,maxWidth:380 }}>
           <span style={{ position:'absolute',left:13,top:'50%',transform:'translateY(-50%)',fontSize:15,pointerEvents:'none' }}>🔍</span>
-          <input className="sh-search" type="text" placeholder="Buscar lugar por nombre..."
+          <input className="sh-search" type="text" placeholder={t('searchPlaceholder')}
             value={searchTerm} onChange={e => setSearchTerm(e.target.value)}
             style={{ width:'100%',padding:'10px 13px 10px 38px',borderRadius:10,
               border:'1.5px solid rgba(255,255,255,0.2)',background:'rgba(255,255,255,0.1)',
               color:'white',fontSize:13,fontFamily:'inherit',transition:'border-color 0.2s,box-shadow 0.2s' }} />
         </div>
         {[
-          { value: places.length, label: 'Lugares' },
-          { value: new Set(places.map(p => p.category)).size, label: 'Categorías' },
+          { value: places.length, label: t('statsPlaces') },
+          { value: new Set(places.map(p => p.category)).size, label: t('statsCategories') },
         ].map(s => (
           <div key={s.label}>
             <div style={{ color:'#F7A640',fontSize:20,fontWeight:800,lineHeight:1 }}>{s.value}</div>
@@ -363,6 +368,7 @@ function SunsetHero({ town, searchTerm, setSearchTerm, places, onShowMap, onShow
 
 // ─── PlacesPage ───────────────────────────────────────────────────────────────
 export default function PlacesPage() {
+  const { t } = useTranslation('places')
   const { townSlug } = useParams()
   const navigate = useNavigate()
   const { user } = useAuth()
@@ -370,11 +376,41 @@ export default function PlacesPage() {
   const [town, setTown] = useState(null)
   const [places, setPlaces] = useState([])
   const [filteredPlaces, setFilteredPlaces] = useState([])
-  const [selectedCategory, setSelectedCategory] = useState('ALL')
-  const [searchTerm, setSearchTerm] = useState('')
   const [loading, setLoading] = useState(true)
   const [showMap, setShowMap] = useState(false)
   const [showQR, setShowQR] = useState(false)
+
+  const [searchParams, setSearchParams] = useSearchParams()
+  const selectedCategory = searchParams.get('category') || 'ALL'
+  const searchTerm = searchParams.get('search') || ''
+  const sortBy = searchParams.get('sort') || 'name'
+
+  const setSelectedCategory = (cat) => {
+    setSearchParams(prev => {
+      const next = new URLSearchParams(prev)
+      if (cat === 'ALL') next.delete('category')
+      else next.set('category', cat)
+      return next
+    })
+  }
+
+  const setSearchTerm = (term) => {
+    setSearchParams(prev => {
+      const next = new URLSearchParams(prev)
+      if (term) next.set('search', term)
+      else next.delete('search')
+      return next
+    })
+  }
+
+  const setSortBy = (sort) => {
+    setSearchParams(prev => {
+      const next = new URLSearchParams(prev)
+      if (sort === 'name') next.delete('sort')
+      else next.set('sort', sort)
+      return next
+    })
+  }
 
   useEffect(() => {
     Promise.all([townService.getTown(townSlug), townService.getPlaces(townSlug)])
@@ -390,9 +426,20 @@ export default function PlacesPage() {
   useEffect(() => {
     let result = [...places]
     if (selectedCategory !== 'ALL') result = result.filter(p => p.category === selectedCategory)
-    if (searchTerm.trim()) result = result.filter(p => p.name.toLowerCase().includes(searchTerm.toLowerCase()))
+    if (searchTerm.trim()) {
+      const term = searchTerm.toLowerCase()
+      result = result.filter(p =>
+        p.name.toLowerCase().includes(term) ||
+        (p.description || '').toLowerCase().includes(term)
+      )
+    }
+    result.sort((a, b) => {
+      if (sortBy === 'category') return a.category.localeCompare(b.category)
+      if (sortBy === 'createdAt') return new Date(b.createdAt || 0) - new Date(a.createdAt || 0)
+      return a.name.localeCompare(b.name)
+    })
     setFilteredPlaces(result)
-  }, [selectedCategory, searchTerm, places])
+  }, [selectedCategory, searchTerm, sortBy, places])
 
   const categories = ['ALL', ...new Set(places.map(p => p.category))]
 
@@ -401,7 +448,7 @@ export default function PlacesPage() {
       <div style={{ minHeight:'100vh',display:'flex',alignItems:'center',justifyContent:'center' }}>
         <div style={{ textAlign:'center',color:'white' }}>
           <div style={{ width:52,height:52,border:'4px solid rgba(255,255,255,0.2)',borderTopColor:'#F7A640',borderRadius:'50%',animation:'spin 0.8s linear infinite',margin:'0 auto 16px' }} />
-          <p style={{ fontSize:16,opacity:0.85 }}>Cargando lugares...</p>
+          <p style={{ fontSize:16,opacity:0.85 }}>{t('loadingPlaces')}</p>
           <style>{`@keyframes spin{to{transform:rotate(360deg)}}`}</style>
         </div>
       </div>
@@ -433,7 +480,7 @@ export default function PlacesPage() {
 
       <div className="container" style={{ marginTop:-2, position:'relative', zIndex:10, paddingTop:20 }}>
         <div style={{ background:'white',borderRadius:18,padding:'18px 20px',boxShadow:'0 8px 32px rgba(0,0,0,0.14)',display:'flex',gap:10,flexWrap:'wrap',alignItems:'center' }}>
-          <span style={{ fontSize:13,fontWeight:600,color:'#6b7280',marginRight:4 }}>Filtrar:</span>
+          <span style={{ fontSize:13,fontWeight:600,color:'#6b7280',marginRight:4 }}>{t('filterLabel')}</span>
           {categories.map(cat => {
             const cfg = cat === 'ALL'
               ? { label:'Todos',emoji:'🗺️',bg:'#20606e',light:'#e6f4f6' }
@@ -446,7 +493,7 @@ export default function PlacesPage() {
                   background:active?cfg?.bg:cfg?.light||'#f9fafb',
                   color:active?'white':cfg?.bg||'#374151',
                   transition:'all 0.18s ease',fontFamily:'inherit' }}>
-                {cfg?.emoji} {cfg?.label||cat}
+                {cfg?.emoji} {t(`categories.${cat}`, cfg?.label || cat)}
                 {active && (
                   <span style={{ marginLeft:6,background:'rgba(255,255,255,0.3)',borderRadius:10,padding:'1px 7px',fontSize:11 }}>
                     {cat==='ALL'?places.length:places.filter(p=>p.category===cat).length}
@@ -455,6 +502,15 @@ export default function PlacesPage() {
               </button>
             )
           })}
+          <div style={{ marginLeft:'auto',display:'flex',alignItems:'center',gap:8 }}>
+            <label htmlFor="sort-select" style={{ fontSize:13,fontWeight:600,color:'#6b7280' }}>{t('sortLabel')}</label>
+            <select id="sort-select" value={sortBy} onChange={e => setSortBy(e.target.value)}
+              style={{ padding:'7px 12px',borderRadius:10,border:'2px solid #e5e7eb',fontSize:13,fontWeight:600,color:'#374151',fontFamily:'inherit',cursor:'pointer',background:'#f9fafb' }}>
+              <option value="name">{t('sortOptions.name')}</option>
+              <option value="category">{t('sortOptions.category')}</option>
+              <option value="createdAt">{t('sortOptions.createdAt')}</option>
+            </select>
+          </div>
         </div>
       </div>
 
@@ -462,23 +518,28 @@ export default function PlacesPage() {
         {filteredPlaces.length === 0 ? (
           <div style={{ background:'rgba(255,255,255,0.1)',borderRadius:18,padding:'64px 24px',textAlign:'center',color:'white',backdropFilter:'blur(4px)',border:'1px solid rgba(255,255,255,0.1)' }}>
             <div style={{ fontSize:52,marginBottom:12 }}>🔍</div>
-            <h5 style={{ fontWeight:700 }}>Sin resultados</h5>
-            <p style={{ opacity:0.7,marginBottom:20 }}>No encontramos lugares con ese criterio.</p>
+            <h5 style={{ fontWeight:700 }}>{t('noResultsTitle')}</h5>
+            <p style={{ opacity:0.7,marginBottom:20 }}>{t('noResultsBody')}</p>
             <button onClick={() => { setSearchTerm(''); setSelectedCategory('ALL') }}
               style={{ background:'#F7A640',color:'white',border:'none',padding:'10px 24px',borderRadius:10,fontWeight:600,cursor:'pointer',fontSize:14,fontFamily:'inherit' }}>
-              Ver todos
+              {t('viewAll')}
             </button>
           </div>
         ) : (
           <>
             <p style={{ color:'rgba(255,255,255,0.6)',fontSize:14,marginBottom:20 }}>
-              {filteredPlaces.length} lugar{filteredPlaces.length!==1?'es':''} encontrado{filteredPlaces.length!==1?'s':''}
-              {selectedCategory!=='ALL'&&` en ${CATEGORY_CONFIG[selectedCategory]?.label||selectedCategory}`}
+              {selectedCategory !== 'ALL'
+                ? t('foundInCategory', { count: filteredPlaces.length, category: t(`categories.${selectedCategory}`, CATEGORY_CONFIG[selectedCategory]?.label || selectedCategory) })
+                : t('found', { count: filteredPlaces.length })}
             </p>
             <div className="places-grid row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
               {filteredPlaces.map(place => (
                 <div className="col" key={place.id}>
-                  <PlaceCard place={place} categoryInfo={CATEGORY_CONFIG[place.category]} />
+                  <PlaceCard
+                    place={place}
+                    categoryInfo={CATEGORY_CONFIG[place.category]}
+                    categoryLabel={t(`categories.${place.category}`, CATEGORY_CONFIG[place.category]?.label)}
+                  />
                 </div>
               ))}
             </div>

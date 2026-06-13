@@ -1,4 +1,5 @@
 import { useEffect } from 'react'
+import { useTranslation } from 'react-i18next'
 
 const PLANE_URL  = 'https://i.imgur.com/3BGEqFQ.png'
 const CLOUD_URL  = 'https://i.imgur.com/6tncGeG.png'
@@ -13,6 +14,8 @@ const CLOUDS = [
 ]
 
 export default function TravelTransition({ destinationName, onComplete }) {
+  const { t } = useTranslation('transition')
+
   useEffect(() => {
     const t = setTimeout(onComplete, 4000)
     return () => clearTimeout(t)
@@ -163,7 +166,7 @@ export default function TravelTransition({ destinationName, onComplete }) {
           letterSpacing: 7, fontWeight: 700, textTransform: 'uppercase',
           textShadow: '0 1px 10px rgba(0,0,0,0.5)',
         }}>
-          ✈ &nbsp;Viajando a
+          ✈ &nbsp;{t('travelingTo', 'Viajando a')}
         </p>
         <h2 style={{
           color: 'white', fontSize: 40, fontWeight: 800,
@@ -177,7 +180,7 @@ export default function TravelTransition({ destinationName, onComplete }) {
           color: 'rgba(255,255,255,0.65)', fontSize: 13,
           margin: '0 0 22px', letterSpacing: 3,
         }}>
-          Costa Rica
+          {t('country', 'Costa Rica')}
         </p>
         <div style={{ display: 'flex', justifyContent: 'center', gap: 7 }}>
           {[0, 0.2, 0.4].map((delay, i) => (

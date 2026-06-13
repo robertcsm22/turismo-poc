@@ -1,0 +1,7 @@
+{
+  "defaultTownName": "Turismo Local",
+  "defaultTownFallback": "este pueblo",
+  "province": "{{province}}, Costa Rica",
+  "scanInstructions": "Escanea para acceder a los lugares turísticos de",
+  "downloadButton": "⬇️ Descargar PNG"
+}

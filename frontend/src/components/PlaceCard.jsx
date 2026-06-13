@@ -1,4 +1,4 @@
-export default function PlaceCard({ place, categoryInfo }) {
+export default function PlaceCard({ place, categoryInfo, categoryLabel }) {
   const fallbackImg = `https://placehold.co/600x400/${
     (categoryInfo?.bg || '#2F7C91').replace('#', '')
   }/ffffff?text=${encodeURIComponent(place.name)}`
@@ -41,7 +41,7 @@ export default function PlaceCard({ place, categoryInfo }) {
             display: 'flex', alignItems: 'center', gap: 5,
             boxShadow: '0 2px 8px rgba(0,0,0,0.2)',
           }}>
-            {categoryInfo.emoji} {categoryInfo.label}
+            {categoryInfo.emoji} {categoryLabel || categoryInfo.label}
           </div>
         )}
       </div>

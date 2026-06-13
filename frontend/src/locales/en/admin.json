@@ -1,0 +1,49 @@
+{
+  "coordPicker": {
+    "instructions": "Click on the map to place the marker, or drag it to adjust.",
+    "latitude": "Latitude",
+    "longitude": "Longitude"
+  },
+  "messages": {
+    "townLoadError": "Error: could not load the town",
+    "placeUpdated": "Place updated successfully",
+    "placeCreated": "Place created successfully",
+    "noPermission": "You don't have permission to perform this action",
+    "invalidData": "Invalid data, please check the form",
+    "saveError": "Error saving the place",
+    "placeDeleted": "Place deleted",
+    "deleteError": "Error deleting the place"
+  },
+  "header": {
+    "title": "Admin Panel",
+    "subtitle": "Manage the tourist places of {{town}}"
+  },
+  "placesCount_one": "{{count}} place",
+  "placesCount_other": "{{count}} places",
+  "form": {
+    "editTitle": "✏️  Edit Place",
+    "newTitle": "➕  New Place",
+    "editingId": "Editing ID #{{id}}",
+    "nameLabel": "Place name",
+    "namePlaceholder": "E.g. Pretty Beach",
+    "descriptionLabel": "Description",
+    "descriptionPlaceholder": "Brief description of the place...",
+    "categoryLabel": "Category",
+    "addressLabel": "Address",
+    "addressPlaceholder": "E.g. Main Street, #10",
+    "imageUrlLabel": "Image URL",
+    "imageUrlPlaceholder": "https://...",
+    "imagePreviewAlt": "preview",
+    "locationLabel": "Location on map",
+    "saveChanges": "Save changes",
+    "createPlace": "Create place"
+  },
+  "empty": {
+    "title": "No places yet",
+    "body": "Add the first tourist place using the form."
+  },
+  "card": {
+    "editButton": "✏️ Edit",
+    "deleteButton": "🗑️ Delete"
+  }
+}

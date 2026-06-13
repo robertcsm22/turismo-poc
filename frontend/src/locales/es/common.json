@@ -1,0 +1,15 @@
+{
+  "appName": "Turismo Local",
+  "buttons": {
+    "cancel": "Cancelar",
+    "save": "Guardar",
+    "confirm": "Confirmar",
+    "delete": "Eliminar",
+    "edit": "Editar",
+    "close": "Cerrar",
+    "back": "Volver",
+    "create": "Crear"
+  },
+  "loading": "Cargando...",
+  "language": "Idioma"
+}

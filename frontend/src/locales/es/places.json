@@ -1,0 +1,45 @@
+{
+  "categories": {
+    "ALL": "Todos",
+    "RESTAURANTE": "Restaurante",
+    "PARQUE": "Parque",
+    "MUSEO": "Museo",
+    "MIRADOR": "Mirador",
+    "HOTEL": "Hotel",
+    "PLAYA": "Playa",
+    "CULTURAL": "Cultural",
+    "GASTRONOMIA": "Gastronomía",
+    "OTRO": "Otro"
+  },
+  "loadingPlaces": "Cargando lugares...",
+  "badge": "🗺️ Turismo Local",
+  "searchPlaceholder": "Buscar lugar por nombre...",
+  "showMap": "🗺️ Ver mapa",
+  "showQR": "📲 Código QR",
+  "statsPlaces": "Lugares",
+  "statsCategories": "Categorías",
+  "filterLabel": "Filtrar:",
+  "sortLabel": "Ordenar por:",
+  "sortOptions": {
+    "name": "Nombre",
+    "category": "Categoría",
+    "createdAt": "Más recientes"
+  },
+  "noResultsTitle": "Sin resultados",
+  "noResultsBody": "No encontramos lugares con ese criterio.",
+  "viewAll": "Ver todos",
+  "found_one": "{{count}} lugar encontrado",
+  "found_other": "{{count}} lugares encontrados",
+  "foundInCategory_one": "{{count}} lugar encontrado en {{category}}",
+  "foundInCategory_other": "{{count}} lugares encontrados en {{category}}",
+  "mapModal": {
+    "title": "Mapa de {{town}}",
+    "withLocation": "{{count}} lugares con ubicación",
+    "categoriesLabel": "CATEGORÍAS:"
+  },
+  "qrModal": {
+    "title": "Código QR",
+    "scanRedirect": "Escanear redirige a",
+    "download": "⬇️ Descargar PNG"
+  }
+}

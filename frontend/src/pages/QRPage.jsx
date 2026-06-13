@@ -1,8 +1,10 @@
 import { useEffect, useRef, useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import { townService } from '../services/api'
 
 export default function QRPage() {
+  const { t } = useTranslation(['qr', 'common'])
   const { townSlug } = useParams()
   const navigate = useNavigate()
   const qrRef = useRef(null)
@@ -106,11 +108,11 @@ export default function QRPage() {
         }}>
           <div style={{ fontSize: 36, marginBottom: 8 }}>📲</div>
           <h2 style={{ color: '#123C3A', fontWeight: 800, margin: '0 0 4px', fontSize: 22 }}>
-            {town?.name || 'Turismo Local'}
+            {town?.name || t('defaultTownName')}
           </h2>
           {town?.province && (
             <p style={{ color: '#64748b', fontSize: 13, margin: '0 0 24px' }}>
-              {town.province}, Costa Rica
+              {t('province', { province: town.province })}
             </p>
           )}
 
@@ -125,8 +127,8 @@ export default function QRPage() {
           </div>
 
           <p style={{ color: '#94a3b8', fontSize: 12, margin: '0 0 20px', lineHeight: 1.5 }}>
-            Escanea para acceder a los lugares turísticos de{' '}
-            <strong style={{ color: '#123C3A' }}>{town?.name || 'este pueblo'}</strong>
+            {t('scanInstructions')}{' '}
+            <strong style={{ color: '#123C3A' }}>{town?.name || t('defaultTownFallback')}</strong>
           </p>
 
           <div style={{ display: 'flex', gap: 10, justifyContent: 'center', flexWrap: 'wrap' }}>
@@ -138,7 +140,7 @@ export default function QRPage() {
                 fontSize: 13, cursor: 'pointer',
               }}
             >
-              ⬇️ Descargar PNG
+              {t('downloadButton')}
             </button>
             <button
               onClick={() => navigate(-1)}
@@ -148,7 +150,7 @@ export default function QRPage() {
                 borderRadius: 10, fontWeight: 600, fontSize: 13, cursor: 'pointer',
               }}
             >
-              ← Volver
+              ← {t('buttons.back', { ns: 'common' })}
             </button>
           </div>
         </div>

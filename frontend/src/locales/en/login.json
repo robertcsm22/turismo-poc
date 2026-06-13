@@ -1,0 +1,14 @@
+{
+  "logoAlt": "Santa Teresa Logo",
+  "defaultTitle": "Local Tourism",
+  "provinceLabel": "{{province}}, Costa Rica",
+  "subtitleWithTown": "Discover the best places in {{townName}}. Sign in with your Gmail account to continue.",
+  "subtitleDefault": "Sign in with your Gmail account to explore tourist places.",
+  "errors": {
+    "loginFailed": "Login failed. Please try again."
+  },
+  "verifying": "Verifying...",
+  "or": "or",
+  "qrButton": "View destination QR code",
+  "gmailOnly": "📷 Only @gmail.com accounts are accepted"
+}

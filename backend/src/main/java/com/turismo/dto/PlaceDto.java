@@ -6,6 +6,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
+
 @Data
 @Builder
 @NoArgsConstructor
@@ -19,6 +21,7 @@ public class PlaceDto {
     private String imageUrl;
     private Double latitude;
     private Double longitude;
+    private LocalDateTime createdAt;
 
     public static PlaceDto from(Place place) {
         return PlaceDto.builder()
@@ -30,6 +33,7 @@ public class PlaceDto {
                 .imageUrl(place.getImageUrl())
                 .latitude(place.getLatitude())
                 .longitude(place.getLongitude())
+                .createdAt(place.getCreatedAt())
                 .build();
     }
 }

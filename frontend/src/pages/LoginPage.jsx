@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { useParams, useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import { authService, townService } from '../services/api'
@@ -30,6 +31,7 @@ const COLUMNS = [0, 1, 2, 3].map(ci =>
 )
 
 export default function LoginPage() {
+  const { t } = useTranslation('login')
   const { townSlug } = useParams()
   const navigate = useNavigate()
   const { login, isAuthenticated } = useAuth()
@@ -60,7 +62,7 @@ export default function LoginPage() {
       login(authResponse)
       navigate(townSlug ? `/lugares/${townSlug}` : '/destinos')
     } catch (err) {
-      setError(err.response?.data?.message || 'Error al iniciar sesión. Intenta de nuevo.')
+      setError(err.response?.data?.message || t('errors.loginFailed'))
       setLoading(false)
       setGoogleReady(false)
       setTimeout(() => setGoogleReady(true), 100)
@@ -158,22 +160,22 @@ export default function LoginPage() {
           boxShadow: '0 32px 80px rgba(0,0,0,0.5)',
         }}>
           <div style={{ textAlign: 'center', marginBottom: 24 }}>
-            <img src={logo} alt="Logo Santa Teresa" height={110}
+            <img src={logo} alt={t('logoAlt')} height={110}
               style={{ objectFit: 'contain', width: 'auto', marginBottom: 12 }} />
             <h1 style={{ color: '#123C3A', fontWeight: 800, fontSize: 22, margin: '0 0 4px' }}>
-              {town ? town.name : 'Turismo Local'}
+              {town ? town.name : t('defaultTitle')}
             </h1>
             {town?.province && (
               <p style={{ color: '#64748b', fontSize: 13, margin: 0 }}>
-                {town.province}, Costa Rica
+                {t('provinceLabel', { province: town.province })}
               </p>
             )}
           </div>
 
           <p style={{ textAlign: 'center', color: '#64748b', fontSize: 14, margin: '0 0 24px', lineHeight: 1.55 }}>
             {town
-              ? `Descubre los mejores lugares de ${town.name}. Inicia sesión con tu cuenta Gmail para continuar.`
-              : 'Inicia sesión con tu cuenta Gmail para explorar lugares turísticos.'}
+              ? t('subtitleWithTown', { townName: town.name })
+              : t('subtitleDefault')}
           </p>
 
           {error && (
@@ -193,7 +195,7 @@ export default function LoginPage() {
                 borderTopColor: '#123C3A', borderRadius: '50%',
                 animation: 'lp-spin 0.8s linear infinite', margin: '0 auto 10px',
               }} />
-              <p style={{ color: '#64748b', fontSize: 13, margin: 0 }}>Verificando...</p>
+              <p style={{ color: '#64748b', fontSize: 13, margin: 0 }}>{t('verifying')}</p>
             </div>
           ) : (
             <div style={{ display: 'flex', justifyContent: 'center' }}>
@@ -203,7 +205,7 @@ export default function LoginPage() {
 
           <div style={{ display: 'flex', alignItems: 'center', gap: 10, margin: '18px 0 14px' }}>
             <div style={{ flex: 1, height: 1, background: '#e2e8f0' }} />
-            <span style={{ color: '#cbd5e1', fontSize: 11, fontWeight: 600 }}>o</span>
+            <span style={{ color: '#cbd5e1', fontSize: 11, fontWeight: 600 }}>{t('or')}</span>
             <div style={{ flex: 1, height: 1, background: '#e2e8f0' }} />
           </div>
 
@@ -227,12 +229,12 @@ export default function LoginPage() {
                 <rect x="14" y="14" width="3" height="3"/><rect x="18" y="14" width="3" height="3"/>
                 <rect x="14" y="18" width="3" height="3"/><rect x="18" y="18" width="3" height="3"/>
               </svg>
-              Ver código QR del destino
+              {t('qrButton')}
             </button>
           </div>
 
           <p style={{ textAlign: 'center', color: '#94a3b8', fontSize: 11, margin: '16px 0 0' }}>
-            📷 Solo se aceptan cuentas @gmail.com
+            {t('gmailOnly')}
           </p>
         </div>
       </div>

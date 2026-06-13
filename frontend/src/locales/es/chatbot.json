@@ -1,0 +1,23 @@
+{
+  "welcome": "¡Hola! 👋 Soy tu guía virtual de turismo. Pregúntame sobre los lugares, actividades, restaurantes o lo que quieras saber del pueblo. 🌴",
+  "fab": {
+    "title": "Asistente de turismo"
+  },
+  "header": {
+    "title": "Guía de {{town}}",
+    "defaultTown": "Turismo",
+    "subtitle": "Asistente virtual · En línea",
+    "clearTitle": "Limpiar chat"
+  },
+  "suggestions": {
+    "label": "SUGERENCIAS",
+    "questions": {
+      "today": "¿Qué puedo hacer hoy?",
+      "eat": "¿Dónde comer?",
+      "beaches": "¿Cuáles son las mejores playas?"
+    }
+  },
+  "input": {
+    "placeholder": "Escribe tu pregunta..."
+  }
+}

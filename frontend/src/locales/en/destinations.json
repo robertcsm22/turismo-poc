@@ -1,0 +1,15 @@
+{
+  "navbar": {
+    "brand": "Turismo Local",
+    "dashboard": "📊 Dashboard",
+    "logout": "Log out"
+  },
+  "hero": {
+    "title": "Local Tourism System of Costa Rica",
+    "description": "A platform designed to bring you the best of the Costa Rican Pacific: from the legendary waves of Santa Teresa, Tamarindo and Jacó, to the lush nature of Manuel Antonio and the turquoise waters of Playa Conchal. Discover beaches, restaurants, hotels, viewpoints and activities recommended by the local community, all organized by destination so you can plan your next adventure hassle-free.",
+    "cta": "Select one of the destinations below to start exploring 👇"
+  },
+  "card": {
+    "explore": "Explore destination →"
+  }
+}

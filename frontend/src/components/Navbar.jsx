@@ -1,9 +1,12 @@
 import { useState, useEffect } from 'react'
+import { useTranslation } from 'react-i18next'
 import { useAuth } from '../context/AuthContext'
 import { useNavigate, Link } from 'react-router-dom'
 import logo from '../assets/Logo de Santa Tereza.png'
+import LanguageSwitcher from './LanguageSwitcher'
 
 export default function Navbar({ town, user }) {
+  const { t } = useTranslation('navbar')
   const { logout } = useAuth()
   const navigate = useNavigate()
   const [isScrolled, setIsScrolled] = useState(false)
@@ -39,13 +42,19 @@ export default function Navbar({ town, user }) {
           style={{ cursor: 'pointer' }}
           onClick={() => navigate(town?.slug ? `/lugares/${town.slug}` : '/login')}
         >
-          <img 
-            src={logo} 
-            alt="Logo" 
+          <img
+            src={logo}
+            alt="Logo"
             style={{ height: '40px', width: 'auto' }}
           />
-          {town?.name || 'Turismo Local'}
+          {town?.name || t('defaultTitle')}
         </span>
+
+        {!user && (
+          <div className="d-flex align-items-center gap-3">
+            <LanguageSwitcher />
+          </div>
+        )}
 
         {user && (
           <div className="d-flex align-items-center gap-3">
@@ -66,7 +75,7 @@ export default function Navbar({ town, user }) {
                 to={`/admin/lugares/${town?.slug || 'santa-teresa'}`}
                 className="btn btn-warning btn-sm"
              >
-                ⚙️ Administrar
+                {t('admin')}
                </Link>
               )}
             <button
@@ -82,10 +91,11 @@ export default function Navbar({ town, user }) {
               onMouseEnter={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.28)' }}
               onMouseLeave={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.15)' }}
             >
-              ← Destinos
+              {t('destinations')}
             </button>
+            <LanguageSwitcher />
             <button className="btn btn-outline-light btn-sm" onClick={handleLogout}>
-              Salir
+              {t('logout')}
             </button>
           </div>
         )}
