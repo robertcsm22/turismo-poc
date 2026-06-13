@@ -11,5 +11,32 @@
   },
   "card": {
     "explore": "Explore destination →"
+  },
+  "places": {
+    "santa-teresa": {
+      "name": "Santa Teresa Beach",
+      "province": "Puntarenas",
+      "description": "Perfect waves for surfing and spectacular sunsets on the Nicoya Peninsula."
+    },
+    "tamarindo": {
+      "name": "Tamarindo Beach",
+      "province": "Guanacaste",
+      "description": "Guanacaste's liveliest destination, famous for surfing and nightlife."
+    },
+    "manuel-antonio": {
+      "name": "Manuel Antonio Beach",
+      "province": "Puntarenas",
+      "description": "Lush nature right by the sea: monkeys, sloths and crystal-clear waters."
+    },
+    "jaco": {
+      "name": "Jacó Beach",
+      "province": "Puntarenas",
+      "description": "The most accessible beach from San José, perfect for surfing and adventure."
+    },
+    "conchal": {
+      "name": "Conchal Beach",
+      "province": "Guanacaste",
+      "description": "A unique beach formed by millions of shells, with calm turquoise waters."
+    }
   }
 }

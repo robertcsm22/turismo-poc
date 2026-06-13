@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next'
 import { useAuth } from '../context/AuthContext'
 import logo from '../assets/Logo de Santa Tereza.png'
 import TravelTransition from '../components/TravelTransition'
+import LanguageSwitcher from '../components/LanguageSwitcher'
 
 // Imágenes de las playas del proyecto (Unsplash)
 const HERO_IMAGES = [
@@ -82,42 +83,27 @@ function HeroCarousel() {
 const DESTINATIONS = [
   {
     slug: 'santa-teresa',
-    name: 'Playa Santa Teresa',
-    province: 'Puntarenas',
-    description: 'Olas perfectas para surf y atardeceres espectaculares en la Península de Nicoya.',
-    emoji: '🏄',
+    image: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=800&q=80',
     gradient: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
   },
   {
     slug: 'tamarindo',
-    name: 'Playa Tamarindo',
-    province: 'Guanacaste',
-    description: 'El destino más animado de Guanacaste, famoso por el surf y la vida nocturna.',
-    emoji: '🌅',
+    image: 'https://images.unsplash.com/photo-1519046904884-53103b34b206?auto=format&fit=crop&w=800&q=80',
     gradient: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)',
   },
   {
     slug: 'manuel-antonio',
-    name: 'Playa Manuel Antonio',
-    province: 'Puntarenas',
-    description: 'Naturaleza exuberante junto al mar: monos, perezosos y aguas cristalinas.',
-    emoji: '🐒',
+    image: 'https://images.unsplash.com/photo-1559827260-dc66d52bef19?auto=format&fit=crop&w=800&q=80',
     gradient: 'linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)',
   },
   {
     slug: 'jaco',
-    name: 'Playa Jacó',
-    province: 'Puntarenas',
-    description: 'La playa más accesible desde San José, perfecta para surf y aventura.',
-    emoji: '🤙',
+    image: 'https://images.unsplash.com/photo-1544551763-46a013bb70d5?auto=format&fit=crop&w=800&q=80',
     gradient: 'linear-gradient(135deg, #fa709a 0%, #fee140 100%)',
   },
   {
     slug: 'conchal',
-    name: 'Playa Conchal',
-    province: 'Guanacaste',
-    description: 'Playa única formada por millones de conchas, con aguas turquesas y tranquilas.',
-    emoji: '🐚',
+    image: 'https://images.unsplash.com/photo-1535262412227-85541e910204?auto=format&fit=crop&w=800&q=80',
     gradient: 'linear-gradient(135deg, #a18cd1 0%, #fbc2eb 100%)',
   },
 ]
@@ -136,7 +122,7 @@ export default function DestinationsPage() {
   if (traveling) {
     return (
       <TravelTransition
-        destinationName={traveling.name}
+        destinationName={t(`places.${traveling.slug}.name`)}
         onComplete={() => navigate(`/lugares/${traveling.slug}`)}
       />
     )
@@ -165,6 +151,7 @@ export default function DestinationsPage() {
             <span style={{ color: 'rgba(255,255,255,0.75)', fontSize: 13, display: 'none' }}
               className="d-md-inline">{user.name}</span>
           )}
+          <LanguageSwitcher />
           {user?.role === 'ADMIN' && (
             <button onClick={() => navigate('/admin/lugares/santa-teresa')} style={{
               background: 'rgba(247,166,64,0.15)', color: '#F7A640',
@@ -219,17 +206,19 @@ export default function DestinationsPage() {
                   e.currentTarget.style.boxShadow = ''
                 }}
               >
-                {/* Banner con gradiente */}
+                {/* Banner con foto */}
                 <div
                   style={{
                     height: 140,
                     background: dest.gradient,
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
+                    overflow: 'hidden',
                   }}
                 >
-                  <span style={{ fontSize: 64 }}>{dest.emoji}</span>
+                  <img
+                    src={dest.image}
+                    alt={t(`places.${dest.slug}.name`)}
+                    style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                  />
                 </div>
 
                 {/* Contenido */}
@@ -237,14 +226,14 @@ export default function DestinationsPage() {
                   <div className="d-flex align-items-start justify-content-between">
                     <div>
                       <h5 className="card-title fw-bold mb-1" style={{ color: '#1a202c' }}>
-                        {dest.name}
+                        {t(`places.${dest.slug}.name`)}
                       </h5>
                       <span className="badge bg-light text-secondary mb-2" style={{ fontSize: '0.75rem' }}>
-                        📍 {dest.province}
+                        📍 {t(`places.${dest.slug}.province`)}
                       </span>
                     </div>
                   </div>
-                  <p className="card-text text-muted small">{dest.description}</p>
+                  <p className="card-text text-muted small">{t(`places.${dest.slug}.description`)}</p>
                   <button
                     className="btn btn-sm w-100 mt-2 fw-semibold text-white"
                     style={{ background: dest.gradient, border: 'none', borderRadius: 10 }}

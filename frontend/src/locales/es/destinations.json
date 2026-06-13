@@ -11,5 +11,32 @@
   },
   "card": {
     "explore": "Explorar destino →"
+  },
+  "places": {
+    "santa-teresa": {
+      "name": "Playa Santa Teresa",
+      "province": "Puntarenas",
+      "description": "Olas perfectas para surf y atardeceres espectaculares en la Península de Nicoya."
+    },
+    "tamarindo": {
+      "name": "Playa Tamarindo",
+      "province": "Guanacaste",
+      "description": "El destino más animado de Guanacaste, famoso por el surf y la vida nocturna."
+    },
+    "manuel-antonio": {
+      "name": "Playa Manuel Antonio",
+      "province": "Puntarenas",
+      "description": "Naturaleza exuberante junto al mar: monos, perezosos y aguas cristalinas."
+    },
+    "jaco": {
+      "name": "Playa Jacó",
+      "province": "Puntarenas",
+      "description": "La playa más accesible desde San José, perfecta para surf y aventura."
+    },
+    "conchal": {
+      "name": "Playa Conchal",
+      "province": "Guanacaste",
+      "description": "Playa única formada por millones de conchas, con aguas turquesas y tranquilas."
+    }
   }
 }
