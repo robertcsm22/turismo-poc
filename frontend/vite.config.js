@@ -7,6 +7,9 @@ export default defineConfig({
     globals: true,
     environment: 'jsdom',
     setupFiles: './src/tests/setup.js',
+    env: {
+      VITE_GOOGLE_CLIENT_ID: 'test-google-client-id.apps.googleusercontent.com',
+    },
     coverage: {
       provider: 'v8',
       reporter: ['text', 'lcov', 'html'],
