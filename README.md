@@ -97,7 +97,8 @@ El QR de prueba apunta a: `https://turismo-poc.web.app/p/santa-teresa`
 
 ## 👥 Equipo
 
-| Nombre | Carné |
-|---|---|
-| Nombre 1 | 000000 |
-| Nombre 2 | 000000 |
+- Roberto Sanchez Matus
+- Shirley Perez Anchia
+- Keyner Mesis Castellon
+- Joan Eras Cruz
+- Gabriel Murillo Ruiz
