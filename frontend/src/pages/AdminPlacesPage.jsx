@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next'
 import { useAuth } from '../context/AuthContext'
 import { placeService, townService } from '../services/api'
 import Navbar from '../components/Navbar'
+import { localizedField } from '../utils/localized'
 
 const CATEGORIES = {
   PARQUE:      { label: 'Parque',       icon: '🌿', bg: '#16a34a', light: '#dcfce7' },
@@ -17,7 +18,7 @@ const CATEGORIES = {
   OTRO:        { label: 'Otro',         icon: '📍', bg: '#64748b', light: '#f1f5f9' },
 }
 
-const EMPTY_FORM = { name: '', description: '', category: 'PARQUE', address: '', imageUrl: '', latitude: '', longitude: '' }
+const EMPTY_FORM = { name: '', description: '', nameEn: '', descriptionEn: '', category: 'PARQUE', address: '', imageUrl: '', latitude: '', longitude: '' }
 
 // Centro por defecto de Santa Teresa, Costa Rica
 const DEFAULT_CENTER = [9.6466, -85.1700]
@@ -186,7 +187,7 @@ function CategoryBadge({ category }) {
 }
 
 export default function AdminPlacesPage() {
-  const { t } = useTranslation(['admin', 'common'])
+  const { t, i18n } = useTranslation(['admin', 'common'])
   const { t: tp } = useTranslation('places')
   const navigate = useNavigate()
   const { user } = useAuth()
@@ -198,6 +199,8 @@ export default function AdminPlacesPage() {
   const [formData, setFormData] = useState(EMPTY_FORM)
   const [toast, setToast] = useState(null)
   const [deletingId, setDeletingId] = useState(null)
+  const [townTranslation, setTownTranslation] = useState({ nameEn: '', descriptionEn: '' })
+  const [savingTranslation, setSavingTranslation] = useState(false)
 
   const showToast = (message, type = 'success') => {
     setToast({ message, type })
@@ -209,9 +212,31 @@ export default function AdminPlacesPage() {
       .then(([townData, placesData]) => {
         setTown(townData)
         setPlaces(placesData)
+        setTownTranslation({
+          nameEn: townData.nameEn || '',
+          descriptionEn: townData.descriptionEn || '',
+        })
       })
       .catch(console.error)
   }, [townSlug])
+
+  const handleTownTranslationChange = (e) =>
+    setTownTranslation({ ...townTranslation, [e.target.name]: e.target.value })
+
+  const handleSaveTownTranslation = async (e) => {
+    e.preventDefault()
+    if (!town?.id) return
+    setSavingTranslation(true)
+    try {
+      const updated = await townService.updateTranslation(town.id, townTranslation)
+      setTown(updated)
+      showToast(t('translation.saveSuccess'))
+    } catch {
+      showToast(t('translation.saveError'), 'error')
+    } finally {
+      setSavingTranslation(false)
+    }
+  }
 
   const loadPlaces = () => {
     townService.getPlaces(townSlug).then(setPlaces).catch(console.error)
@@ -272,6 +297,8 @@ export default function AdminPlacesPage() {
     setFormData({
       name: place.name || '',
       description: place.description || '',
+      nameEn: place.nameEn || '',
+      descriptionEn: place.descriptionEn || '',
       category: place.category || 'PARQUE',
       address: place.address || '',
       imageUrl: place.imageUrl || '',
@@ -338,10 +365,22 @@ export default function AdminPlacesPage() {
                 {t('header.title')}
               </h1>
               <p style={{ margin: '4px 0 0', opacity: 0.75, fontSize: 14 }}>
-                {t('header.subtitle', { town: town?.name || 'Santa Teresa' })}
+                {t('header.subtitle', { town: town ? localizedField(town, 'name', i18n.language) : 'Santa Teresa' })}
               </p>
             </div>
-            <div style={{ marginLeft: 'auto' }}>
+            <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: 12 }}>
+              <button
+                onClick={() => navigate('/admin/estadisticas')}
+                style={{
+                  background: 'rgba(255,255,255,0.15)', color: 'white',
+                  border: '1.5px solid rgba(255,255,255,0.3)',
+                  padding: '8px 18px', borderRadius: 10, fontSize: 14,
+                  fontWeight: 500, cursor: 'pointer', transition: 'all 0.2s',
+                  backdropFilter: 'blur(4px)',
+                }}
+              >
+                {t('stats.navLink')}
+              </button>
               <span style={{
                 background: 'rgba(255,255,255,0.2)', padding: '6px 16px',
                 borderRadius: 20, fontSize: 14, fontWeight: 600,
@@ -390,6 +429,19 @@ export default function AdminPlacesPage() {
                   <textarea className="admin-input" style={{ ...inputStyle, minHeight: 90, resize: 'vertical' }}
                     name="description" placeholder={t('form.descriptionPlaceholder')}
                     value={formData.description} onChange={handleChange} />
+                </div>
+
+                <div>
+                  <label style={labelStyle}>{t('form.nameEnLabel')}</label>
+                  <input className="admin-input" style={inputStyle} type="text" name="nameEn"
+                    placeholder={t('form.nameEnPlaceholder')} value={formData.nameEn} onChange={handleChange} />
+                </div>
+
+                <div>
+                  <label style={labelStyle}>{t('form.descriptionEnLabel')}</label>
+                  <textarea className="admin-input" style={{ ...inputStyle, minHeight: 90, resize: 'vertical' }}
+                    name="descriptionEn" placeholder={t('form.descriptionEnPlaceholder')}
+                    value={formData.descriptionEn} onChange={handleChange} />
                 </div>
 
                 <div>
@@ -453,6 +505,49 @@ export default function AdminPlacesPage() {
                 </div>
               </form>
             </div>
+
+            <div style={{
+              background: 'white', borderRadius: 18, overflow: 'hidden',
+              boxShadow: '0 4px 24px rgba(0,0,0,0.10)', marginTop: 24,
+            }}>
+              <div style={{
+                background: 'linear-gradient(135deg, #2F7C91, #123C3A)',
+                padding: '20px 24px', color: 'white',
+              }}>
+                <h5 style={{ margin: 0, fontSize: 17, fontWeight: 700 }}>
+                  {t('translation.title')}
+                </h5>
+                <p style={{ margin: '4px 0 0', opacity: 0.8, fontSize: 13 }}>
+                  {t('translation.subtitle')}
+                </p>
+              </div>
+
+              <form onSubmit={handleSaveTownTranslation} style={{ padding: 24, display: 'flex', flexDirection: 'column', gap: 16 }}>
+                <div>
+                  <label style={labelStyle}>{t('translation.nameEnLabel')}</label>
+                  <input className="admin-input" style={inputStyle} type="text" name="nameEn"
+                    placeholder={t('translation.nameEnPlaceholder')} value={townTranslation.nameEn} onChange={handleTownTranslationChange} />
+                </div>
+
+                <div>
+                  <label style={labelStyle}>{t('translation.descriptionEnLabel')}</label>
+                  <textarea className="admin-input" style={{ ...inputStyle, minHeight: 90, resize: 'vertical' }}
+                    name="descriptionEn" placeholder={t('translation.descriptionEnPlaceholder')}
+                    value={townTranslation.descriptionEn} onChange={handleTownTranslationChange} />
+                </div>
+
+                <button className="btn-submit" type="submit" disabled={!town || savingTranslation} style={{
+                  padding: '11px 0',
+                  background: !town ? '#9ca3af' : '#20606e',
+                  color: 'white', border: 'none', borderRadius: 10,
+                  fontWeight: 700, fontSize: 15,
+                  cursor: !town ? 'not-allowed' : 'pointer',
+                  transition: 'background 0.2s',
+                }}>
+                  {savingTranslation ? t('loading', { ns: 'common' }) : t('translation.save')}
+                </button>
+              </form>
+            </div>
           </div>
 
           <div className="col-lg-8">
@@ -471,6 +566,8 @@ export default function AdminPlacesPage() {
               <div className="row g-3">
                 {places.map((place) => {
                   const cfg = CATEGORIES[place.category] || CATEGORIES.OTRO
+                  const placeName = localizedField(place, 'name', i18n.language)
+                  const placeDescription = localizedField(place, 'description', i18n.language)
                   return (
                     <div key={place.id} className="col-md-6">
                       <div className="place-admin-card" style={{
@@ -480,7 +577,7 @@ export default function AdminPlacesPage() {
                       }}>
                         <div style={{ position: 'relative', height: 140, overflow: 'hidden', background: '#f3f4f6' }}>
                           {place.imageUrl ? (
-                            <img src={place.imageUrl} alt={place.name}
+                            <img src={place.imageUrl} alt={placeName}
                               style={{ width: '100%', height: '100%', objectFit: 'cover' }}
                               onError={(e) => { e.target.style.display = 'none' }} />
                           ) : (
@@ -500,20 +597,20 @@ export default function AdminPlacesPage() {
 
                         <div style={{ padding: '14px 16px', flex: 1 }}>
                           <h6 style={{ margin: '0 0 6px', fontWeight: 700, fontSize: 16, color: '#111827' }}>
-                            {place.name}
+                            {placeName}
                           </h6>
                           {place.address && (
                             <p style={{ margin: '0 0 6px', fontSize: 12, color: '#6b7280' }}>
                               📍 {place.address}
                             </p>
                           )}
-                          {place.description && (
+                          {placeDescription && (
                             <p style={{
                               margin: 0, fontSize: 13, color: '#4b5563',
                               display: '-webkit-box', WebkitLineClamp: 2,
                               WebkitBoxOrient: 'vertical', overflow: 'hidden',
                             }}>
-                              {place.description}
+                              {placeDescription}
                             </p>
                           )}
                         </div>

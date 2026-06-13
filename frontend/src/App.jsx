@@ -5,6 +5,7 @@ import DestinationsPage from './pages/DestinationsPage'
 import PlacesPage from './pages/PlacesPage'
 import ErrorPage from './pages/ErrorPage'
 import AdminPlacesPage from './pages/AdminPlacesPage'
+import AdminStatsPage from './pages/AdminStatsPage'
 import QRPage from './pages/QRPage'
 
 
@@ -75,6 +76,14 @@ function AppRoutes() {
         element={
           <AdminRoute>
             <AdminPlacesPage />
+          </AdminRoute>
+        }
+      />
+      <Route
+        path="/admin/estadisticas"
+        element={
+          <AdminRoute>
+            <AdminStatsPage />
           </AdminRoute>
         }
       />

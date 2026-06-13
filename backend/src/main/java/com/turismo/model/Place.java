@@ -27,6 +27,11 @@ public class Place {
     @Column(length = 2000)
     private String description;
 
+    private String nameEn;
+
+    @Column(length = 2000)
+    private String descriptionEn;
+
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private Category category;

@@ -28,6 +28,10 @@
     "namePlaceholder": "E.g. Pretty Beach",
     "descriptionLabel": "Description",
     "descriptionPlaceholder": "Brief description of the place...",
+    "nameEnLabel": "Name (English)",
+    "nameEnPlaceholder": "E.g. Pretty Beach",
+    "descriptionEnLabel": "Description (English)",
+    "descriptionEnPlaceholder": "Brief description of the place in English...",
     "categoryLabel": "Category",
     "addressLabel": "Address",
     "addressPlaceholder": "E.g. Main Street, #10",
@@ -45,5 +49,41 @@
   "card": {
     "editButton": "✏️ Edit",
     "deleteButton": "🗑️ Delete"
+  },
+  "stats": {
+    "navLink": "📊 Statistics",
+    "loadError": "Could not load the statistics",
+    "empty": "No data available yet",
+    "header": {
+      "title": "Statistics Dashboard",
+      "subtitle": "Overview of towns, places and reviews"
+    },
+    "townsByPlaces": {
+      "title": "Towns with the most places",
+      "placesCount_one": "{{count}} place",
+      "placesCount_other": "{{count}} places"
+    },
+    "topRated": {
+      "title": "Best rated places"
+    },
+    "worstRated": {
+      "title": "Lowest rated places"
+    },
+    "mostReviewed": {
+      "title": "Most reviewed places",
+      "reviewsCount_one": "{{count}} review",
+      "reviewsCount_other": "{{count}} reviews"
+    }
+  },
+  "translation": {
+    "title": "🌐  Town translation",
+    "subtitle": "English text shown when the site language is English",
+    "nameEnLabel": "Town name (English)",
+    "nameEnPlaceholder": "E.g. Santa Teresa Beach",
+    "descriptionEnLabel": "Town description (English)",
+    "descriptionEnPlaceholder": "Brief description of the town in English...",
+    "save": "Save translation",
+    "saveSuccess": "Translation saved successfully",
+    "saveError": "Error saving the translation"
   }
 }

@@ -1,11 +1,14 @@
 import { useTranslation } from 'react-i18next'
+import { localizedField } from '../utils/localized'
 
 export default function PlaceCard({ place, categoryInfo, categoryLabel, onSelect, isSelected }) {
-  const { t } = useTranslation('places')
+  const { t, i18n } = useTranslation('places')
+  const name = localizedField(place, 'name', i18n.language)
+  const description = localizedField(place, 'description', i18n.language)
 
   const fallbackImg = `https://placehold.co/600x400/${
     (categoryInfo?.bg || '#2F7C91').replace('#', '')
-  }/ffffff?text=${encodeURIComponent(place.name)}`
+  }/ffffff?text=${encodeURIComponent(name)}`
 
   return (
     <div
@@ -24,7 +27,7 @@ export default function PlaceCard({ place, categoryInfo, categoryLabel, onSelect
       <div style={{ position: 'relative', height: 210, overflow: 'hidden', flexShrink: 0 }}>
         <img
           src={place.imageUrl || fallbackImg}
-          alt={place.name}
+          alt={name}
           className="place-card-image"
           style={{ width: '100%', height: '100%', objectFit: 'cover', transition: 'transform 0.35s ease' }}
           onError={(e) => { e.target.src = fallbackImg }}
@@ -57,17 +60,17 @@ export default function PlaceCard({ place, categoryInfo, categoryLabel, onSelect
           margin: 0, fontWeight: 800, fontSize: 18,
           color: '#111827', lineHeight: 1.3,
         }}>
-          {place.name}
+          {name}
         </h5>
 
-        {place.description && (
+        {description && (
           <p style={{
             margin: 0, fontSize: 14, color: '#6b7280', lineHeight: 1.6,
             flex: 1,
             display: '-webkit-box', WebkitLineClamp: 3,
             WebkitBoxOrient: 'vertical', overflow: 'hidden',
           }}>
-            {place.description}
+            {description}
           </p>
         )}
 

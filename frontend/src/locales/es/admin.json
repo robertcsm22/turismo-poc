@@ -28,6 +28,10 @@
     "namePlaceholder": "Ej. Playa Bonita",
     "descriptionLabel": "Descripción",
     "descriptionPlaceholder": "Breve descripción del lugar...",
+    "nameEnLabel": "Nombre (Inglés)",
+    "nameEnPlaceholder": "Ej. Pretty Beach",
+    "descriptionEnLabel": "Descripción (Inglés)",
+    "descriptionEnPlaceholder": "Breve descripción del lugar en inglés...",
     "categoryLabel": "Categoría",
     "addressLabel": "Dirección",
     "addressPlaceholder": "Ej. Calle Principal, #10",
@@ -45,5 +49,41 @@
   "card": {
     "editButton": "✏️ Editar",
     "deleteButton": "🗑️ Eliminar"
+  },
+  "stats": {
+    "navLink": "📊 Estadísticas",
+    "loadError": "No se pudieron cargar las estadísticas",
+    "empty": "Aún no hay datos disponibles",
+    "header": {
+      "title": "Panel de Estadísticas",
+      "subtitle": "Resumen de pueblos, lugares y reseñas"
+    },
+    "townsByPlaces": {
+      "title": "Pueblos con más lugares",
+      "placesCount_one": "{{count}} lugar",
+      "placesCount_other": "{{count}} lugares"
+    },
+    "topRated": {
+      "title": "Lugares mejor calificados"
+    },
+    "worstRated": {
+      "title": "Lugares peor calificados"
+    },
+    "mostReviewed": {
+      "title": "Lugares con más reseñas",
+      "reviewsCount_one": "{{count}} reseña",
+      "reviewsCount_other": "{{count}} reseñas"
+    }
+  },
+  "translation": {
+    "title": "🌐  Traducción del pueblo",
+    "subtitle": "Texto en inglés que se muestra cuando el idioma del sitio es inglés",
+    "nameEnLabel": "Nombre del pueblo (Inglés)",
+    "nameEnPlaceholder": "Ej. Santa Teresa Beach",
+    "descriptionEnLabel": "Descripción del pueblo (Inglés)",
+    "descriptionEnPlaceholder": "Breve descripción del pueblo en inglés...",
+    "save": "Guardar traducción",
+    "saveSuccess": "Traducción guardada correctamente",
+    "saveError": "Error al guardar la traducción"
   }
 }

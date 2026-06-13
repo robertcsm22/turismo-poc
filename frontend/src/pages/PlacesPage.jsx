@@ -8,6 +8,7 @@ import ReviewSection from '../components/ReviewSection'
 import Navbar from '../components/Navbar'
 import TourismChatbot from '../components/TourismChatbot'
 import tropicalScene from '../assets/tropical-scene.svg'
+import { localizedField } from '../utils/localized'
 
 export const CATEGORY_CONFIG = {
   RESTAURANTE: { label: 'Restaurante',  emoji: '🍽️', bg: '#dc2626', light: '#fee2e2' },
@@ -23,7 +24,7 @@ export const CATEGORY_CONFIG = {
 
 // ─── Map Modal ────────────────────────────────────────────────────────────────
 function MapModal({ places, town, onClose }) {
-  const { t } = useTranslation('places')
+  const { t, i18n } = useTranslation('places')
   const mapRef = useRef(null)
   const mapInstanceRef = useRef(null)
 
@@ -57,6 +58,9 @@ function MapModal({ places, town, onClose }) {
         popupAnchor: [0, -44],
       })
 
+      const placeName = localizedField(place, 'name', i18n.language)
+      const placeDescription = localizedField(place, 'description', i18n.language)
+
       L.marker([place.latitude, place.longitude], { icon })
         .addTo(map)
         .bindPopup(`
@@ -65,8 +69,8 @@ function MapModal({ places, town, onClose }) {
             <div style="margin-bottom:5px;">
               <span style="background:${cfg.bg};color:white;padding:2px 8px;border-radius:10px;font-size:11px;font-weight:600;">${cfg.emoji} ${catLabel}</span>
             </div>
-            <strong style="font-size:14px;display:block;margin-bottom:3px;">${place.name}</strong>
-            ${place.description ? `<p style="font-size:12px;color:#555;margin:0 0 4px;line-height:1.4;">${place.description.slice(0, 80)}${place.description.length > 80 ? '…' : ''}</p>` : ''}
+            <strong style="font-size:14px;display:block;margin-bottom:3px;">${placeName}</strong>
+            ${placeDescription ? `<p style="font-size:12px;color:#555;margin:0 0 4px;line-height:1.4;">${placeDescription.slice(0, 80)}${placeDescription.length > 80 ? '…' : ''}</p>` : ''}
             ${place.address ? `<p style="font-size:12px;color:#888;margin:0;">📍 ${place.address}</p>` : ''}
           </div>`)
     })
@@ -112,7 +116,7 @@ function MapModal({ places, town, onClose }) {
           <div style={{ display:'flex',alignItems:'center',gap:10 }}>
             <span style={{ fontSize:22 }}>🗺️</span>
             <div>
-              <p style={{ color:'white',fontWeight:700,margin:0,fontSize:16 }}>{t('mapModal.title', { town: town?.name })}</p>
+              <p style={{ color:'white',fontWeight:700,margin:0,fontSize:16 }}>{t('mapModal.title', { town: localizedField(town, 'name', i18n.language) })}</p>
               <p style={{ color:'rgba(255,255,255,0.65)',margin:0,fontSize:12 }}>{t('mapModal.withLocation', { count: places.filter(p => p.latitude && p.longitude).length })}</p>
             </div>
           </div>
@@ -137,7 +141,7 @@ function MapModal({ places, town, onClose }) {
 
 // ─── QR Modal ─────────────────────────────────────────────────────────────────
 function QRModal({ townSlug, town, onClose }) {
-  const { t } = useTranslation(['places', 'common'])
+  const { t, i18n } = useTranslation(['places', 'common'])
   const qrRef = useRef(null)
   const [qrReady, setQrReady] = useState(false)
 
@@ -205,7 +209,7 @@ function QRModal({ townSlug, town, onClose }) {
       <div style={{ background:'white',borderRadius:20,padding:'36px 32px',textAlign:'center',maxWidth:360,width:'100%',boxShadow:'0 24px 64px rgba(0,0,0,0.4)' }}>
         <div style={{ fontSize:36,marginBottom:8 }}>📲</div>
         <h2 style={{ color:'#123C3A',fontWeight:800,margin:'0 0 4px',fontSize:20 }}>{t('qrModal.title', { ns: 'places' })}</h2>
-        <p style={{ color:'#64748b',fontSize:13,margin:'0 0 24px' }}>{town?.name || townSlug} · {town?.province || 'Costa Rica'}</p>
+        <p style={{ color:'#64748b',fontSize:13,margin:'0 0 24px' }}>{town ? localizedField(town, 'name', i18n.language) : townSlug} · {town?.province || 'Costa Rica'}</p>
 
         {/* QR con efecto scan */}
         <div style={{ position:'relative',display:'inline-block',marginBottom:16 }}>
@@ -248,7 +252,9 @@ const BIRD_DATA = [
 ]
 
 function SunsetHero({ town, searchTerm, setSearchTerm, places, onShowMap, onShowQR }) {
-  const { t } = useTranslation('places')
+  const { t, i18n } = useTranslation('places')
+  const townName = localizedField(town, 'name', i18n.language)
+  const townDescription = localizedField(town, 'description', i18n.language)
   const birdsRef = useRef(null)
 
   useEffect(() => {
@@ -317,12 +323,12 @@ function SunsetHero({ town, searchTerm, setSearchTerm, places, onShowMap, onShow
           }}>{t('badge')}</span>
 
           <h1 style={{ color:'white',fontSize:36,fontWeight:800,margin:'0 0 6px',textShadow:'0 2px 16px rgba(0,0,0,0.5)',lineHeight:1.1 }}>
-            {town?.name}
+            {townName}
           </h1>
 
-          {town?.description && (
+          {townDescription && (
             <p style={{ color:'rgba(255,255,255,0.82)',fontSize:14,margin:'0 0 16px',maxWidth:500,lineHeight:1.5 }}>
-              {town.description}
+              {townDescription}
             </p>
           )}
 

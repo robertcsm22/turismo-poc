@@ -30,6 +30,11 @@ public class Town {
     @Column(length = 1000)
     private String description;
 
+    private String nameEn;
+
+    @Column(length = 1000)
+    private String descriptionEn;
+
     private String province;
 
     private String imageUrl;

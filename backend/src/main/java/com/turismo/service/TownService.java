@@ -43,4 +43,22 @@ public class TownService {
                 .map(PlaceDto::from)
                 .collect(Collectors.toList());
     }
+
+    public List<TownDto> getAllTowns() {
+        return townRepository.findAll()
+                .stream()
+                .filter(Town::isActive)
+                .map(TownDto::from)
+                .collect(Collectors.toList());
+    }
+
+    public TownDto updateTranslation(Long id, TownDto dto) {
+        Town town = townRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Pueblo no encontrado: " + id));
+
+        town.setNameEn(dto.getNameEn());
+        town.setDescriptionEn(dto.getDescriptionEn());
+
+        return TownDto.from(townRepository.save(town));
+    }
 }

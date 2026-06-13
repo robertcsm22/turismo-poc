@@ -16,6 +16,8 @@ public class PlaceDto {
     private Long id;
     private String name;
     private String description;
+    private String nameEn;
+    private String descriptionEn;
     private String category;
     private String address;
     private String imageUrl;
@@ -23,11 +25,19 @@ public class PlaceDto {
     private Double longitude;
     private LocalDateTime createdAt;
 
+    private Long townId;
+    private String townSlug;
+    private String townName;
+    private Double averageRating;
+    private Long reviewCount;
+
     public static PlaceDto from(Place place) {
         return PlaceDto.builder()
                 .id(place.getId())
                 .name(place.getName())
                 .description(place.getDescription())
+                .nameEn(place.getNameEn())
+                .descriptionEn(place.getDescriptionEn())
                 .category(place.getCategory().name())
                 .address(place.getAddress())
                 .imageUrl(place.getImageUrl())

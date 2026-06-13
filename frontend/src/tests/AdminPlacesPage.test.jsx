@@ -30,7 +30,7 @@ vi.mock('../services/api', () => ({
   },
 }))
 
-const TOWN = { id: 1, name: 'Santa Teresa', slug: 'santa-teresa' }
+const TOWN = { id: 1, name: 'Santa Teresa', slug: 'santa-teresaa' }
 
 const PLACES = [
   {

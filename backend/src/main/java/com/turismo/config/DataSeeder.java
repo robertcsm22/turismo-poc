@@ -28,7 +28,32 @@ public class DataSeeder {
             seedManuelAntonio();
             seedJaco();
             seedConchal();
+            seedTownTranslations();
         };
+    }
+
+    private void seedTownTranslations() {
+        updateTownTranslation("santa-teresa", "Santa Teresa Beach",
+                "Perfect waves for surfing and spectacular sunsets on the Nicoya Peninsula.");
+        updateTownTranslation("tamarindo", "Tamarindo Beach",
+                "Guanacaste's liveliest destination, famous for surfing and nightlife.");
+        updateTownTranslation("manuel-antonio", "Manuel Antonio Beach",
+                "Lush nature right by the sea: monkeys, sloths and crystal-clear waters.");
+        updateTownTranslation("jaco", "Jacó Beach",
+                "The most accessible beach from San José, perfect for surfing and adventure.");
+        updateTownTranslation("conchal", "Conchal Beach",
+                "A unique beach formed by millions of shells, with calm turquoise waters.");
+    }
+
+    private void updateTownTranslation(String slug, String nameEn, String descriptionEn) {
+        townRepository.findBySlug(slug).ifPresent(town -> {
+            if (town.getNameEn() == null || town.getNameEn().isBlank()) {
+                town.setNameEn(nameEn);
+                town.setDescriptionEn(descriptionEn);
+                townRepository.save(town);
+                log.info("Traducción EN agregada a {}", slug);
+            }
+        });
     }
 
     private void seedSantaTeresa() {

@@ -4,9 +4,11 @@ import { useAuth } from '../context/AuthContext'
 import { useNavigate, Link } from 'react-router-dom'
 import logo from '../assets/Logo de Santa Tereza.png'
 import LanguageSwitcher from './LanguageSwitcher'
+import { localizedField } from '../utils/localized'
 
 export default function Navbar({ town, user }) {
-  const { t } = useTranslation('navbar')
+  const { t, i18n } = useTranslation('navbar')
+  const townName = town ? localizedField(town, 'name', i18n.language) : null
   const { logout } = useAuth()
   const navigate = useNavigate()
   const [isScrolled, setIsScrolled] = useState(false)
@@ -47,7 +49,7 @@ export default function Navbar({ town, user }) {
             alt="Logo"
             style={{ height: '40px', width: 'auto' }}
           />
-          {town?.name || t('defaultTitle')}
+          {townName || t('defaultTitle')}
         </span>
 
         {!user && (

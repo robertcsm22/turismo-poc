@@ -7,12 +7,20 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/places")
 @RequiredArgsConstructor
 public class PlaceController {
 
     private final PlaceService placeService;
+
+    @PreAuthorize("hasRole('ADMIN')")
+    @GetMapping
+    public ResponseEntity<List<PlaceDto>> getAllPlaces() {
+        return ResponseEntity.ok(placeService.getAllActivePlacesWithStats());
+    }
 
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/town/{townId}")

@@ -15,6 +15,8 @@ public class TownDto {
     private String slug;
     private String name;
     private String description;
+    private String nameEn;
+    private String descriptionEn;
     private String province;
     private String imageUrl;
 
@@ -24,6 +26,8 @@ public class TownDto {
                 .slug(town.getSlug())
                 .name(town.getName())
                 .description(town.getDescription())
+                .nameEn(town.getNameEn())
+                .descriptionEn(town.getDescriptionEn())
                 .province(town.getProvince())
                 .imageUrl(town.getImageUrl())
                 .build();

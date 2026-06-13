@@ -37,6 +37,9 @@ export const authService = {
 export const townService = {
   getTown: (slug) => api.get(`/towns/${slug}`).then((r) => r.data),
   getPlaces: (slug) => api.get(`/towns/${slug}/places`).then((r) => r.data),
+  getAllTowns: () => api.get('/towns').then((r) => r.data),
+  updateTranslation: (id, data) =>
+    api.put(`/towns/${id}/translation`, data).then((r) => r.data),
 }
 
 // ─── Users ──────────────────────────────────────────────
@@ -45,6 +48,8 @@ export const userService = {
 }
 
 export const placeService = {
+  getAllPlaces: () => api.get('/places').then((r) => r.data),
+
   createPlace: (townId, placeData) =>
     api.post(`/places/town/${townId}`, placeData).then((r) => r.data),
 
