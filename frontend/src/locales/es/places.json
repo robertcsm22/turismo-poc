@@ -32,6 +32,10 @@
   "found_other": "{{count}} lugares encontrados",
   "foundInCategory_one": "{{count}} lugar encontrado en {{category}}",
   "foundInCategory_other": "{{count}} lugares encontrados en {{category}}",
+  "viewingReviews": "Viendo reseñas de {{name}}",
+  "viewAllPlaces": "Ver todos los lugares",
+  "viewReviews": "Ver reseñas",
+  "closeReviews": "Cerrar reseñas",
   "mapModal": {
     "title": "Mapa de {{town}}",
     "withLocation": "{{count}} lugares con ubicación",

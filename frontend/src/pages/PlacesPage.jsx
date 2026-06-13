@@ -4,6 +4,7 @@ import { useParams, useNavigate, useSearchParams } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import { townService } from '../services/api'
 import PlaceCard from '../components/PlaceCard'
+import ReviewSection from '../components/ReviewSection'
 import Navbar from '../components/Navbar'
 import TourismChatbot from '../components/TourismChatbot'
 import tropicalScene from '../assets/tropical-scene.svg'
@@ -379,6 +380,7 @@ export default function PlacesPage() {
   const [loading, setLoading] = useState(true)
   const [showMap, setShowMap] = useState(false)
   const [showQR, setShowQR] = useState(false)
+  const [selectedReviewPlace, setSelectedReviewPlace] = useState(null)
 
   const [searchParams, setSearchParams] = useSearchParams()
   const selectedCategory = searchParams.get('category') || 'ALL'
@@ -441,7 +443,14 @@ export default function PlacesPage() {
     setFilteredPlaces(result)
   }, [selectedCategory, searchTerm, sortBy, places])
 
+  useEffect(() => {
+    if (!selectedReviewPlace) return
+    const stillVisible = filteredPlaces.some(place => place.id === selectedReviewPlace.id)
+    if (!stillVisible) setSelectedReviewPlace(null)
+  }, [filteredPlaces, selectedReviewPlace])
+
   const categories = ['ALL', ...new Set(places.map(p => p.category))]
+  const visiblePlaces = selectedReviewPlace ? [selectedReviewPlace] : filteredPlaces
 
   if (loading) {
     return (
@@ -528,20 +537,50 @@ export default function PlacesPage() {
         ) : (
           <>
             <p style={{ color:'rgba(255,255,255,0.6)',fontSize:14,marginBottom:20 }}>
-              {selectedCategory !== 'ALL'
-                ? t('foundInCategory', { count: filteredPlaces.length, category: t(`categories.${selectedCategory}`, CATEGORY_CONFIG[selectedCategory]?.label || selectedCategory) })
-                : t('found', { count: filteredPlaces.length })}
+              {selectedReviewPlace
+                ? t('viewingReviews', { name: selectedReviewPlace.name })
+                : selectedCategory !== 'ALL'
+                  ? t('foundInCategory', { count: filteredPlaces.length, category: t(`categories.${selectedCategory}`, CATEGORY_CONFIG[selectedCategory]?.label || selectedCategory) })
+                  : t('found', { count: filteredPlaces.length })}
             </p>
-            <div className="places-grid row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
-              {filteredPlaces.map(place => (
+            {selectedReviewPlace && (
+              <button
+                type="button"
+                onClick={() => setSelectedReviewPlace(null)}
+                style={{
+                  background: 'rgba(255,255,255,0.14)',
+                  color: 'white',
+                  border: '1.5px solid rgba(255,255,255,0.28)',
+                  padding: '9px 16px',
+                  borderRadius: 10,
+                  fontWeight: 700,
+                  fontSize: 13,
+                  cursor: 'pointer',
+                  marginBottom: 18,
+                }}
+              >
+                {t('viewAllPlaces')}
+              </button>
+            )}
+            <div className={`places-grid row g-4 ${selectedReviewPlace ? 'row-cols-1 row-cols-lg-2' : 'row-cols-1 row-cols-md-2 row-cols-lg-3'}`}>
+              {visiblePlaces.map(place => (
                 <div className="col" key={place.id}>
                   <PlaceCard
                     place={place}
                     categoryInfo={CATEGORY_CONFIG[place.category]}
                     categoryLabel={t(`categories.${place.category}`, CATEGORY_CONFIG[place.category]?.label)}
+                    isSelected={selectedReviewPlace?.id === place.id}
+                    onSelect={() => setSelectedReviewPlace(current =>
+                      current?.id === place.id ? null : place
+                    )}
                   />
                 </div>
               ))}
+              {selectedReviewPlace && (
+                <div className="col">
+                  <ReviewSection key={selectedReviewPlace.id} place={selectedReviewPlace} />
+                </div>
+              )}
             </div>
           </>
         )}

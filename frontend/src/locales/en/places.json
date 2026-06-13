@@ -32,6 +32,10 @@
   "found_other": "{{count}} places found",
   "foundInCategory_one": "{{count}} place found in {{category}}",
   "foundInCategory_other": "{{count}} places found in {{category}}",
+  "viewingReviews": "Viewing reviews for {{name}}",
+  "viewAllPlaces": "View all places",
+  "viewReviews": "View reviews",
+  "closeReviews": "Close reviews",
   "mapModal": {
     "title": "Map of {{town}}",
     "withLocation": "{{count}} places with location",
